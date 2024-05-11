@@ -1,90 +1,11 @@
 /* eslint-disable react/no-unknown-property */
-import { useRef, useState } from 'react'
-import { Canvas } from '@react-three/fiber'
 import { MapControls } from '@react-three/drei'
-import * as THREE from "three"
-
-function MetalMaterial({side, hovered}) {
-  return <meshStandardMaterial
-      color={hovered ? 'hotpink' : 'white'}
-      roughness={0.25}
-      metalness={1}
-      side={ side ? side : THREE.FrontSide}
-    />
-}
-
-function Jack(props) {
-  const ref = useRef()
-  const [hovered, hover] = useState(false)
-
-  return (
-    <group
-      {...props}
-      ref={ref}
-      onPointerOver={(event) => (event.stopPropagation(), hover(true))}
-      onPointerOut={() => hover(false)}>
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.025]} >
-        <cylinderGeometry args={[0.25, 0.25, 0.05, 6, 1, false]} />
-        <MetalMaterial hovered={hovered} />
-      </mesh>
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.06]}>
-        <cylinderGeometry args={[0.15, 0.25, 0.02, 6, 1, true]} />
-        <MetalMaterial hovered={hovered} flatshading/>
-      </mesh>
-      <mesh rotation={[0, 0, 0]} position={[0, 0, 0.0625]}>
-        <ringGeometry args={[0, 0.15, 12]} />
-        <meshStandardMaterial color={'black'} roughness={1} metalness={0} />
-      </mesh>
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.0625]}>
-        <cylinderGeometry args={[0.15, 0.15, 0.15, 32, 1, true]} />
-        <MetalMaterial hovered={hovered} />
-      </mesh>
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.0625]}>
-        <cylinderGeometry args={[0.13, 0.13, 0.19, 32, 1, true]} />
-        <MetalMaterial hovered={hovered} side={THREE.BackSide}/>
-      </mesh>
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.1475]}>
-        <cylinderGeometry args={[0.13, 0.15, 0.02, 32, 1, true]} />
-        <MetalMaterial hovered={hovered} />
-      </mesh>
-    </group>
-  )
-}
+import { Canvas } from '@react-three/fiber'
+import { useState } from 'react'
+import Jack from './components/Jack'
+import Wire from './components/Wire'
 
 const wireColors = ['black', 'gray', 'white', 'red']
-
-function Wire({start, end, color}) {
-  const path = [start.clone().setZ(0.775), start.clone().setZ(0.9), end.clone().setZ(0.9), end.clone().setZ(0.775)]
-  // CurveType = "centripetal" | "chordal" | "catmullrom";
-  const curve = new THREE.CatmullRomCurve3(path, false, "chordal", 0.75)
-  const wireGeometry = new THREE.TubeGeometry(curve, 64, 0.05, 8, false)
-  
-  return <group>
-    <Plug position={start} color={color} />
-    <Plug position={end} color={color} />
-    <mesh geometry={wireGeometry}>
-      <meshStandardMaterial color={color} roughness={0.25} metalness={0} />
-    </mesh>
-  </group>
-}
-
-function Plug({color, position}) {
-  return <group>
-    {/* <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.0625]}> */}
-    <mesh rotation={[Math.PI / 2, 0, 0]} position={position}>
-      <cylinderGeometry args={[0.1, 0.1, 0.5, 32, 1, false]} />
-      <MetalMaterial />
-    </mesh>
-    <mesh rotation={[Math.PI / 2, 0, 0]} position={position.clone().setZ(0.325)}>
-      <cylinderGeometry args={[0.13, 0.13, 0.3, 32, 1, false]} />
-      <meshStandardMaterial color={color} roughness={0.25} metalness={0} />
-    </mesh>
-    <mesh rotation={[Math.PI / 2, 0, 0]} position={position.clone().setZ(0.625)}>
-      <cylinderGeometry args={[0.1, 0.13, 0.3, 32, 1, false]} />
-      <meshStandardMaterial color={color} roughness={0.25} metalness={0} />
-    </mesh>
-  </group>
-}
 
 export default function App() {
   const [startJack, setStartJack] = useState()
