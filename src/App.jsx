@@ -1,11 +1,16 @@
 /* eslint-disable react/no-unknown-property */
 import { useRef, useState } from 'react'
-import { Canvas, useThree } from '@react-three/fiber'
+import { Canvas } from '@react-three/fiber'
 import { MapControls } from '@react-three/drei'
 import * as THREE from "three"
 
 function MetalMaterial({side, hovered}) {
-  return <meshStandardMaterial color={hovered ? 'hotpink' : 'white'} roughness={0.25} metalness={1} side={ side ? side : THREE.FrontSide} />
+  return <meshStandardMaterial
+      color={hovered ? 'hotpink' : 'white'}
+      roughness={0.25}
+      metalness={1}
+      side={ side ? side : THREE.FrontSide}
+    />
 }
 
 function Jack(props) {
@@ -22,6 +27,10 @@ function Jack(props) {
         <cylinderGeometry args={[0.25, 0.25, 0.05, 6, 1, false]} />
         <MetalMaterial hovered={hovered} />
       </mesh>
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.06]}>
+        <cylinderGeometry args={[0.15, 0.25, 0.02, 6, 1, true]} />
+        <MetalMaterial hovered={hovered} flatshading/>
+      </mesh>
       <mesh rotation={[0, 0, 0]} position={[0, 0, 0.0625]}>
         <ringGeometry args={[0, 0.15, 12]} />
         <meshStandardMaterial color={'black'} roughness={1} metalness={0} />
@@ -31,11 +40,11 @@ function Jack(props) {
         <MetalMaterial hovered={hovered} />
       </mesh>
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.0625]}>
-        <cylinderGeometry args={[0.13, 0.13, 0.15, 32, 1, true]} />
+        <cylinderGeometry args={[0.13, 0.13, 0.19, 32, 1, true]} />
         <MetalMaterial hovered={hovered} side={THREE.BackSide}/>
       </mesh>
-      <mesh rotation={[0, 0, 0]} position={[0, 0, 0.1325]}>
-        <ringGeometry args={[0.13, 0.15, 32]} />
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.1475]}>
+        <cylinderGeometry args={[0.13, 0.15, 0.02, 32, 1, true]} />
         <MetalMaterial hovered={hovered} />
       </mesh>
     </group>
