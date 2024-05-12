@@ -3,40 +3,34 @@ import { useState } from "react";
 import { MetalMaterial } from "./materials/Materials";
 
 
-export type KnobProps = GroupProps & { setControlsDisabled: (x: boolean) => void }
+export type KnobProps = GroupProps & {
+    setControlsDisabled: (x: boolean) => void
 
-export default function Knob(props: KnobProps) {
+    minValue?: number
+    maxValue?: number
+    initialValue?: number
 
-    const calculateNewValue = (value: number, deltaY: number, deltaX: number) => Math.max(0, Math.min(value - ((deltaY / 1000) + (deltaX / 10000)), 1))
-    const calculateRotation = (value: number) => value * (-3 * Math.PI / 2) + (3 * Math.PI / 4)
-
-    return KnobModel(props, calculateNewValue, calculateRotation)
+    knurls?: number
+    flangeHeight?: number
+    flangeRadius?: number
+    knobHeight?: number
+    knobRadius?: number
+    knurlDepth?: number
 }
 
-export function BalancedKnob(props: KnobProps) {
-    const calculateNewValue = (value: number, deltaY: number, deltaX: number) => Math.max(-1, Math.min(value - ((deltaY / 1000) + (deltaX / 10000)), 1))
-    const calculateRotation = (value: number) => value * (-3 * Math.PI / 4)
-
-    return KnobModel(props, calculateNewValue, calculateRotation)
-}
-
-function KnobModel(props: KnobProps, calculateNewValue: (value: number, deltaX: number, deltaY: number) => number, calculateRotation: (value: number) => number) {
+export default function Knob({setControlsDisabled, minValue = 0, maxValue = 1, initialValue = 0, knurls = 16, flangeHeight = 0.1, flangeRadius = 0.25, knobHeight = 0.25, knobRadius = 0.15, knurlDepth = 0.01, ...props}: KnobProps) {
     const [hovered, hover] = useState(false)
-    const [value, setValue] = useState(0)
+    const [value, setValue] = useState(initialValue)
 
-    const knurls = 16
-    const flangeHeight = 0.1
-    const flangeRadius = 0.25
-    const knobHeight = 0.25
-    const knobRadius = 0.15
-    const knurlDepth = 0.01
+    const calculateNewValue = (value: number, deltaY: number, deltaX: number) => Math.max(minValue, Math.min(value - (maxValue - minValue) * ((deltaY / 1000) - (deltaX / 10000)), maxValue))
+    const calculateRotation = (value: number) => (value / (maxValue - minValue)) * (-3 * Math.PI / 2) + ((maxValue + minValue)) * (3 * Math.PI / 4)
 
     return <group
         {...props}
-        onPointerOver={() => { props.setControlsDisabled(true); hover(true) }}
-        onPointerOut={() => { props.setControlsDisabled(false); hover(false) }}
+        onPointerOver={() => { setControlsDisabled(true); hover(true) }}
+        onPointerOut={() => { setControlsDisabled(false); hover(false) }}
         rotation={[0, 0, calculateRotation(value)]}
-        onWheel={(e: ThreeEvent<WheelEvent>) => { setValue(calculateNewValue(value, e.deltaY, e.deltaX))}}
+        onWheel={(e: ThreeEvent<WheelEvent>) => { const v = calculateNewValue(value, e.deltaY, e.deltaX); console.log(v); setValue(v)}}
     >
         <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.05]}>
             <cylinderGeometry args={[knobRadius, flangeRadius, flangeHeight, 32, 1, false, 0]} />
@@ -55,4 +49,8 @@ function KnobModel(props: KnobProps, calculateNewValue: (value: number, deltaX: 
             <meshStandardMaterial color={0xffffff} roughness={0.25} metalness={0} />
         </mesh>
     </group>
+}
+
+export function BalancedKnob(props: KnobProps) {
+    return <Knob {...props} minValue={-1} maxValue={1}/>
 }
