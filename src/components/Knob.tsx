@@ -16,12 +16,14 @@ export default function Knob(props: KnobProps) {
     const knobRadius = 0.15
     const knurlDepth = 0.01
 
+    const calculateNewValue = (deltaY: number, deltaX: number) => Math.max(0, Math.min(value - ((deltaY / 1000) + (deltaX / 10000)), 1))
+
     return <group
         {...props}
         onPointerOver={() => { props.setControlsDisabled(true); hover(true) }}
         onPointerOut={() => { props.setControlsDisabled(false); hover(false) }}
         rotation={[0, 0, value * (-3 * Math.PI / 2) + (3 * Math.PI / 4)]}
-        onWheel={(e: ThreeEvent<WheelEvent>) => { const newV = Math.max(0, Math.min(value - (e.deltaY / 1000), 1)); console.log(newV); setValue(newV) }}
+        onWheel={(e: ThreeEvent<WheelEvent>) => { setValue(calculateNewValue(e.deltaY, e.deltaX))}}
     >
         <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.05]}>
             <cylinderGeometry args={[knobRadius, flangeRadius, flangeHeight, 32, 1, false, 0]} />
