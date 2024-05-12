@@ -16,9 +16,10 @@ export type KnobProps = GroupProps & {
     knobHeight?: number
     knobRadius?: number
     knurlDepth?: number
+    knurlHeight?: number
 }
 
-export default function Knob({setControlsDisabled, minValue = 0, maxValue = 1, initialValue = 0, knurls = 16, flangeHeight = 0.1, flangeRadius = 0.25, knobHeight = 0.25, knobRadius = 0.15, knurlDepth = 0.01, ...props}: KnobProps) {
+export default function Knob({setControlsDisabled, minValue = 0, maxValue = 1, initialValue = 0, knurls = 16, flangeHeight = 0.1, flangeRadius = 0.25, knobHeight = 0.25, knobRadius = 0.15, knurlDepth = 0.01, knurlHeight=0.2, ...props}: KnobProps) {
     const [hovered, hover] = useState(false)
     const [value, setValue] = useState(initialValue)
 
@@ -32,20 +33,24 @@ export default function Knob({setControlsDisabled, minValue = 0, maxValue = 1, i
         rotation={[0, 0, calculateRotation(value)]}
         onWheel={(e: ThreeEvent<WheelEvent>) => { const v = calculateNewValue(value, e.deltaY, e.deltaX); console.log(v); setValue(v)}}
     >
-        <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.05]}>
+        {/* Flange */}
+        <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, flangeHeight/2]}>
             <cylinderGeometry args={[knobRadius, flangeRadius, flangeHeight, 32, 1, false, 0]} />
-            <meshStandardMaterial color={hovered ? 'magenta' : 0x000000} roughness={0.25} metalness={0} transparent={false} opacity={0.25} />
+            <meshStandardMaterial color={hovered ? 'magenta' : 0x000000} roughness={0.25} metalness={0} />
         </mesh>
-        <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.175]}>
+        {/* Knob */}
+        <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, knobHeight / 2]}>
             <cylinderGeometry args={[knobRadius, knobRadius, knobHeight, 32, 1, false]} />
             <MetalMaterial />
         </mesh>
-        {[...Array(knurls)].map((_, i) => <mesh key={i} position={[0, 0, 0.175]} rotation={[0, 0, i * (Math.PI / knurls)]}>
-            <boxGeometry args={[Math.PI / (12 * knurls), 2 * knobRadius + knurlDepth, 0.2]} />
+        {/* Knurls */}
+        {[...Array(knurls)].map((_, i) => <mesh key={i} position={[0, 0, knobHeight / 2]} rotation={[0, 0, i * (Math.PI / knurls)]}>
+            <boxGeometry args={[Math.PI / (12 * knurls), 2 * knobRadius + knurlDepth, knurlHeight]} />
             <meshStandardMaterial color={hovered ? 'magenta' : 0x000000} roughness={0.25} metalness={0} />
         </mesh>)}
-        <mesh position={[0, (knobRadius / 2) + knurlDepth, 0.175]}>
-            <boxGeometry args={[0.0175, knobRadius + knurlDepth, 0.275]} />
+        {/* Pointer */}
+        <mesh position={[0, (knobRadius / 2) + knurlDepth, knobHeight / 2]}>
+            <boxGeometry args={[0.0175, knobRadius + knurlDepth, knobHeight + knurlDepth]} />
             <meshStandardMaterial color={0xffffff} roughness={0.25} metalness={0} />
         </mesh>
     </group>
