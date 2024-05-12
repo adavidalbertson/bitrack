@@ -2,7 +2,15 @@ import * as THREE from 'three'
 import { MetalMaterial } from "./materials/Materials"
 import { useRef, useState } from 'react'
 
-const wireColors = ['black', 'gray', 'white', 'red']
+const wireColors = [
+    0x000000,
+    0x1f1f1f,
+    0x3f3f3f,
+    0x7f7f7f,
+    0xffffff,
+    0xff0000,
+    0xff0000,
+]
 
 export type WireProps = {
     start: THREE.Vector3
