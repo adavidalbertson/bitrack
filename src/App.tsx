@@ -3,7 +3,7 @@ import { Canvas, ThreeEvent } from '@react-three/fiber'
 import { useState } from 'react'
 import * as THREE from 'three'
 import Jack from './components/Jack'
-import Knob from './components/Knob'
+import Knob, { BalancedKnob } from './components/Knob'
 import Wire, { WireProps } from './components/Wire'
 
 
@@ -47,8 +47,9 @@ export default function App() {
             knobPositions.push(new THREE.Vector3(x + 2.5, z - 1.5, 0))
         }
     }
+    const balancedKnobPositions: THREE.Vector3[] = []
     for (let x = 0; x < 3; x++) {
-        knobPositions.push(new THREE.Vector3(x - 3.5, -1.5, 0))
+        balancedKnobPositions.push(new THREE.Vector3(x - 3.5, -1.5, 0))
     }
 
     return (
@@ -69,6 +70,7 @@ export default function App() {
             </mesh>
             {jackPositions.map((pos, i) => <Jack key={i} position={pos} onPointerDown={startDrag} onPointerUp={endDrag} />)}
             {knobPositions.map((pos, i) => <Knob key={i} position={pos} setControlsDisabled={setIsDragging} />)}
+            {balancedKnobPositions.map((pos, i) => <BalancedKnob key={i} position={pos} setControlsDisabled={setIsDragging} />)}
             {wires.map((w, i) => <Wire start={w.start} end={w.end} key={i} />)}
             <MapControls enabled={!isDragging} />
         </Canvas>

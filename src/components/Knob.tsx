@@ -6,6 +6,21 @@ import { MetalMaterial } from "./materials/Materials";
 export type KnobProps = GroupProps & { setControlsDisabled: (x: boolean) => void }
 
 export default function Knob(props: KnobProps) {
+
+    const calculateNewValue = (value: number, deltaY: number, deltaX: number) => Math.max(0, Math.min(value - ((deltaY / 1000) + (deltaX / 10000)), 1))
+    const calculateRotation = (value: number) => value * (-3 * Math.PI / 2) + (3 * Math.PI / 4)
+
+    return KnobModel(props, calculateNewValue, calculateRotation)
+}
+
+export function BalancedKnob(props: KnobProps) {
+    const calculateNewValue = (value: number, deltaY: number, deltaX: number) => Math.max(-1, Math.min(value - ((deltaY / 1000) + (deltaX / 10000)), 1))
+    const calculateRotation = (value: number) => value * (-3 * Math.PI / 4)
+
+    return KnobModel(props, calculateNewValue, calculateRotation)
+}
+
+function KnobModel(props: KnobProps, calculateNewValue: (value: number, deltaX: number, deltaY: number) => number, calculateRotation: (value: number) => number) {
     const [hovered, hover] = useState(false)
     const [value, setValue] = useState(0)
 
@@ -16,14 +31,12 @@ export default function Knob(props: KnobProps) {
     const knobRadius = 0.15
     const knurlDepth = 0.01
 
-    const calculateNewValue = (deltaY: number, deltaX: number) => Math.max(0, Math.min(value - ((deltaY / 1000) + (deltaX / 10000)), 1))
-
     return <group
         {...props}
         onPointerOver={() => { props.setControlsDisabled(true); hover(true) }}
         onPointerOut={() => { props.setControlsDisabled(false); hover(false) }}
-        rotation={[0, 0, value * (-3 * Math.PI / 2) + (3 * Math.PI / 4)]}
-        onWheel={(e: ThreeEvent<WheelEvent>) => { setValue(calculateNewValue(e.deltaY, e.deltaX))}}
+        rotation={[0, 0, calculateRotation(value)]}
+        onWheel={(e: ThreeEvent<WheelEvent>) => { setValue(calculateNewValue(value, e.deltaY, e.deltaX))}}
     >
         <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.05]}>
             <cylinderGeometry args={[knobRadius, flangeRadius, flangeHeight, 32, 1, false, 0]} />
