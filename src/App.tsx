@@ -1,9 +1,10 @@
 import { MapControls } from '@react-three/drei'
 import { Canvas, ThreeEvent } from '@react-three/fiber'
 import { useState } from 'react'
-import Jack from './components/Jack'
-import Wire, { WireProps } from './components/Wire'
 import * as THREE from 'three'
+import Jack from './components/Jack'
+import Knob from './components/Knob'
+import Wire, { WireProps } from './components/Wire'
 
 
 export default function App() {
@@ -31,10 +32,23 @@ export default function App() {
     }
 
     const jackPositions: THREE.Vector3[] = []
-    for (let x = 0; x < 8; x++) {
-        for (let z = 0; z < 4; z++) {
+    for (let x = 0; x < 6; x++) {
+        for (let z = 1; z < 4; z++) {
             jackPositions.push(new THREE.Vector3(x - 3.5, z - 1.5, 0))
         }
+    }
+    for (let x = 0; x < 3; x++) {
+        jackPositions.push(new THREE.Vector3(x - 0.5, -1.5, 0))
+    }
+
+    const knobPositions: THREE.Vector3[] = []
+    for (let x = 0; x < 2; x++) {
+        for (let z = 0; z < 4; z++) {
+            knobPositions.push(new THREE.Vector3(x + 2.5, z - 1.5, 0))
+        }
+    }
+    for (let x = 0; x < 3; x++) {
+        knobPositions.push(new THREE.Vector3(x - 3.5, -1.5, 0))
     }
 
     return (
@@ -54,6 +68,7 @@ export default function App() {
                 <meshStandardMaterial color={'black'} roughness={1} metalness={0.5} />
             </mesh>
             {jackPositions.map((pos, i) => <Jack key={i} position={pos} onPointerDown={startDrag} onPointerUp={endDrag} />)}
+            {knobPositions.map((pos, i) => <Knob key={i} position={pos} setControlsDisabled={setIsDragging} />)}
             {wires.map((w, i) => <Wire start={w.start} end={w.end} key={i} />)}
             <MapControls enabled={!isDragging} />
         </Canvas>
