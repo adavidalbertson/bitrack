@@ -31,7 +31,7 @@ export default function Knob({ setControlsDisabled, minValue = 0, maxValue = 1, 
         onPointerOver={() => { setControlsDisabled(true); hover(true) }}
         onPointerOut={() => { setControlsDisabled(false); hover(false) }}
         rotation={[0, 0, calculateRotation(value)]}
-        onWheel={(e: ThreeEvent<WheelEvent>) => { const v = calculateNewValue(value, e.deltaY, e.deltaX); console.log(v); setValue(v) }}
+        onWheel={(e: ThreeEvent<WheelEvent>) => { setValue(calculateNewValue(value, e.deltaY, e.deltaX)) }}
     >
         {/* Flange */}
         <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, flangeHeight / 2]}>
