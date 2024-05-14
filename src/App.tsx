@@ -52,9 +52,9 @@ export default function App() {
             <pointLight position={[-5, 5, 20]} decay={0} intensity={Math.PI} />
             <pointLight position={[-10, 5, 1]} decay={0} intensity={Math.PI} />
             <pointLight position={[10, 15, 1]} decay={0} intensity={Math.PI} />
-            <Power position={[- 3.5, 2.5, 0]} powerSwitch={powerSwitch} />
-            <Oscillator position={[-4.5, 0, 0]} connect={connect} setControlsDisabled={setIsDragging} audioCtx={audioCtx.current} />
-            <Output connect={connect} setControlsDisabled={setIsDragging} audioCtx={audioCtx.current} />
+            <Power position={[-1.5, 0.75, 0]} powerSwitch={powerSwitch} />
+            <Oscillator position={[0, 0, 0]} connect={connect} setControlsDisabled={setIsDragging} audioCtx={audioCtx.current} />
+            <Output position={[1.5, 0, 0]} connect={connect} setControlsDisabled={setIsDragging} audioCtx={audioCtx.current} />
             {wires.map((w, i) => <Wire start={w.sourcePos!} end={w.destPos!} key={i} />)}
             <MapControls enabled={!isDragging} />
         </Canvas>
