@@ -2,8 +2,6 @@ import { MapControls } from '@react-three/drei'
 import { Canvas, ThreeEvent } from '@react-three/fiber'
 import { useRef, useState } from 'react'
 import * as THREE from 'three'
-import Jack from './components/Jack'
-import Knob, { BalancedFlatKnob } from './components/Knob'
 import Power from './components/Power'
 import Wire, { WireProps } from './components/Wire'
 import Oscillator from './modules/Oscillator'
@@ -78,18 +76,7 @@ export default function App() {
             <pointLight position={[-5, 5, 20]} decay={0} intensity={Math.PI} />
             <pointLight position={[-10, 5, 1]} decay={0} intensity={Math.PI} />
             <pointLight position={[10, 15, 1]} decay={0} intensity={Math.PI} />
-            <mesh position={[-2.5, 0, -0.5]}>
-                <boxGeometry args={[2.6, 3.6, 1]} />
-                <meshStandardMaterial color={'darkSlateGray'} roughness={1} metalness={0.5} />
-            </mesh>
-            <mesh position={[1.5, 0, -0.5]}>
-                <boxGeometry args={[4.6, 3.6, 1]} />
-                <meshStandardMaterial color={'black'} roughness={1} metalness={0.5} />
-            </mesh>
             <Power position={[- 3.5, 2.5, 0]} powerSwitch={powerSwitch} />
-            {jackPositions.map((pos, i) => <Jack key={i} position={pos} onPointerDown={startDrag} onPointerUp={endDrag} />)}
-            {knobPositions.map((pos, i) => <Knob key={i} position={pos} setControlsDisabled={setIsDragging} />)}
-            {balancedKnobPositions.map((pos, i) => <BalancedFlatKnob key={i} position={pos} setControlsDisabled={setIsDragging} />)}
             <Oscillator position={[-4.5, 0, 0]} jackStartDrag={startDrag} jackEndDrag={endDrag} setControlsDisabled={setIsDragging} audioCtx={audioCtx.current} />
             {wires.map((w, i) => <Wire start={w.start} end={w.end} key={i} />)}
             <MapControls enabled={!isDragging} />
