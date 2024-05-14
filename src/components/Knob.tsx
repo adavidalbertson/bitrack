@@ -5,6 +5,7 @@ import { MetalMaterial, PlasticMaterial } from "./materials/Materials";
 
 export type KnobProps = GroupProps & {
     setControlsDisabled: (x: boolean) => void
+    updateParameter?: (v: number) => void
 
     minValue?: number
     maxValue?: number
@@ -19,7 +20,7 @@ export type KnobProps = GroupProps & {
     knurlHeight?: number
 }
 
-export default function Knob({ setControlsDisabled, minValue = 0, maxValue = 1, initialValue = 0, knurls = 16, flangeHeight = 0.1, flangeRadius = 0.25, knobHeight = 0.25, knobRadius = 0.15, knurlDepth = 0.01, knurlHeight = 0.24, ...props }: KnobProps) {
+export default function Knob({ setControlsDisabled, updateParameter = () => { }, minValue = 0, maxValue = 1, initialValue = 0, knurls = 16, flangeHeight = 0.1, flangeRadius = 0.25, knobHeight = 0.25, knobRadius = 0.15, knurlDepth = 0.01, knurlHeight = 0.24, ...props }: KnobProps) {
     const [hovered, hover] = useState(false)
     const [value, setValue] = useState(initialValue)
 
@@ -31,7 +32,7 @@ export default function Knob({ setControlsDisabled, minValue = 0, maxValue = 1, 
         onPointerOver={() => { setControlsDisabled(true); hover(true) }}
         onPointerOut={() => { setControlsDisabled(false); hover(false) }}
         rotation={[0, 0, calculateRotation(value)]}
-        onWheel={(e: ThreeEvent<WheelEvent>) => { setValue(calculateNewValue(value, e.deltaY, e.deltaX)) }}
+        onWheel={(e: ThreeEvent<WheelEvent>) => { const v = calculateNewValue(value, e.deltaY, e.deltaX); setValue(v); updateParameter(v) }}
     >
         {/* Flange */}
         <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, flangeHeight / 2]}>

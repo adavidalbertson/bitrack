@@ -26,7 +26,7 @@ export default function Wire({ start, end }: WireProps) {
 
     return <group ref={ref}>
         <Plug position={start} color={color} />
-        <Plug position={end} color={color} />å
+        <Plug position={end} color={color} />
         <mesh geometry={wireGeometry}>
             <PlasticMaterial color={color} />
         </mesh>
