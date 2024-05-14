@@ -1,6 +1,6 @@
 import { GroupProps } from "@react-three/fiber";
 import { useState } from "react";
-import { PlasticMaterial } from "./materials/Materials";
+import { PlasticMaterial } from "../components/materials/Materials";
 
 export type PowerProps = GroupProps & {
     powerSwitch: (powered: boolean) => void

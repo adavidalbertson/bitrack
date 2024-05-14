@@ -1,16 +1,9 @@
-import { GroupProps, ThreeEvent } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
-import Jack from "../components/Jack";
+import { OutputJack } from "../components/Jack";
 import Knob from "../components/Knob";
+import { ModuleProps } from "./Props";
 
-export type OscillatorProps = GroupProps & {
-    setControlsDisabled: (x: boolean) => void
-    jackStartDrag: (e: ThreeEvent<PointerEvent>) => void
-    jackEndDrag: (e: ThreeEvent<PointerEvent>) => void
-    audioCtx: AudioContext
-}
-
-export default function Oscillator({ setControlsDisabled, jackStartDrag, jackEndDrag, audioCtx, ...props }: OscillatorProps) {
+export default function Oscillator({ setControlsDisabled, connect, audioCtx, ...props }: ModuleProps) {
     const [freq, setFreq] = useState(220)
     const osc = useRef(new OscillatorNode(audioCtx, {
         type: "triangle",
@@ -28,10 +21,11 @@ export default function Oscillator({ setControlsDisabled, jackStartDrag, jackEnd
             type: "triangle",
             frequency: freq,
         })
+        // TODO: Move amp to its own module
         amp.current = new GainNode(audioCtx, {
             gain: 1,
         })
-        osc.current.connect(amp.current).connect(audioCtx.destination)
+        osc.current.connect(amp.current)
         osc.current.start()
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -47,8 +41,7 @@ export default function Oscillator({ setControlsDisabled, jackStartDrag, jackEnd
         {...props}
     >
         <Knob setControlsDisabled={setControlsDisabled} position={[0, 1, 0]} updateParameter={updateFreq} minValue={100} maxValue={300} initialValue={200} />
-        <Jack position={[0, 0, 0]} onPointerDown={jackStartDrag} onPointerUp={jackEndDrag} />
-        <Jack position={[0, -1, 0]} onPointerDown={jackStartDrag} onPointerUp={jackEndDrag} />
+        <OutputJack position={[0, 0, 0]} setControlsDisabled={setControlsDisabled} audioNode={osc.current} connect={connect} />
         <mesh position={[0, 0, -0.5]}>
             <boxGeometry args={[1, 3, 1]} />
             <meshStandardMaterial color={'greenyellow'} roughness={1} metalness={0.5} />

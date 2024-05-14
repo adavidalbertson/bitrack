@@ -1,9 +1,16 @@
+import { GroupProps, ThreeEvent } from '@react-three/fiber'
 import { useRef, useState } from 'react'
 import * as THREE from 'three'
+import { WireConnection } from '../App'
 import { MetalMaterial } from './materials/Materials'
-import { GroupProps } from '@react-three/fiber'
 
-export default function Jack(props: GroupProps) {
+export type JackProps = GroupProps & {
+    audioNode: AudioNode
+    connect: (audioConnection: WireConnection) => void
+    setControlsDisabled: (x: boolean) => void
+}
+
+function Jack(props: GroupProps) {
     const ref = useRef<THREE.Group>(null!)
     const [hovered, hover] = useState(false)
 
@@ -39,4 +46,44 @@ export default function Jack(props: GroupProps) {
             </mesh>
         </group>
     )
+}
+
+export function OutputJack({ audioNode, setControlsDisabled, connect, ...props }: JackProps) {
+    const onPointerDown = (e: ThreeEvent<PointerEvent>) => {
+        console.log("connect output", audioNode)
+        setControlsDisabled(true)
+        const pos = new THREE.Vector3()
+        e.eventObject.getWorldPosition(pos)
+        connect({ sourcePos: pos, source: audioNode })
+    }
+
+    const onPointerUp = (e: ThreeEvent<PointerEvent>) => {
+        console.log("to output", audioNode)
+        setControlsDisabled(false)
+        const pos = new THREE.Vector3()
+        e.eventObject.getWorldPosition(pos)
+        connect({ sourcePos: pos, source: audioNode })
+    }
+
+    return <Jack {...props} onPointerDown={onPointerDown} onPointerUp={onPointerUp} />
+}
+
+export function InputJack({ audioNode, setControlsDisabled, connect, ...props }: JackProps) {
+    const onPointerDown = (e: ThreeEvent<PointerEvent>) => {
+        console.log("connect input", audioNode)
+        setControlsDisabled(true)
+        const pos = new THREE.Vector3()
+        e.eventObject.getWorldPosition(pos)
+        connect({ destPos: pos, dest: audioNode })
+    }
+
+    const onPointerUp = (e: ThreeEvent<PointerEvent>) => {
+        console.log("to input", audioNode)
+        setControlsDisabled(false)
+        const pos = new THREE.Vector3()
+        e.eventObject.getWorldPosition(pos)
+        connect({ destPos: pos, dest: audioNode })
+    }
+
+    return <Jack {...props} onPointerDown={onPointerDown} onPointerUp={onPointerUp} />
 }
