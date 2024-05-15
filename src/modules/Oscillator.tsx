@@ -3,7 +3,7 @@ import { OutputJack } from "../components/Jack";
 import Knob from "../components/Knob";
 import { ModuleProps } from "./Props";
 
-export default function Oscillator({ setControlsDisabled, connect, audioCtx, ...props }: ModuleProps) {
+export default function Oscillator({ setControlsDisabled, connect, audioCtx, wires, ...props }: ModuleProps) {
     const [freq, setFreq] = useState(220)
     const osc = useRef(new OscillatorNode(audioCtx, {
         type: "triangle",
@@ -41,7 +41,7 @@ export default function Oscillator({ setControlsDisabled, connect, audioCtx, ...
         {...props}
     >
         <Knob setControlsDisabled={setControlsDisabled} position={[0, 1, 0]} updateParameter={updateFreq} minValue={110} maxValue={440} initialValue={220} />
-        <OutputJack position={[0, 0, 0]} setControlsDisabled={setControlsDisabled} audioNode={osc.current} connect={connect} />
+        <OutputJack position={[0, 0, 0]} setControlsDisabled={setControlsDisabled} audioNode={osc.current} connect={connect} wires={wires} />
         <mesh position={[0, 0, -0.5]}>
             <boxGeometry args={[1, 3, 1]} />
             <meshStandardMaterial color={'greenyellow'} roughness={1} metalness={0.5} />

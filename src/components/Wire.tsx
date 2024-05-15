@@ -13,20 +13,22 @@ const wireColors = [
 ]
 
 export type WireProps = {
-    start: THREE.Vector3
-    end: THREE.Vector3
+    sourcePos: THREE.Vector3
+    destPos: THREE.Vector3
+    sourceId: string
+    destId: string
 }
 
-export default function Wire({ start, end }: WireProps) {
+export default function Wire({ sourcePos: sourcePos, destPos: destPos, sourceId, destId }: WireProps) {
     const ref = useRef<THREE.Group>(null!)
     const [color] = useState(new THREE.Color(wireColors[Math.floor(Math.random() * wireColors.length)]))
-    const path = [start.clone().setZ(0.775), start.clone().setZ(0.9), end.clone().setZ(0.9), end.clone().setZ(0.775)]
+    const path = [sourcePos.clone().setZ(0.775), sourcePos.clone().setZ(0.9), destPos.clone().setZ(0.9), destPos.clone().setZ(0.775)]
     const curve = new THREE.CatmullRomCurve3(path, false, "chordal", 0.75)
     const wireGeometry = new THREE.TubeGeometry(curve, 64, 0.05, 8, false)
 
     return <group ref={ref}>
-        <Plug position={start} color={color} />
-        <Plug position={end} color={color} />
+        <Plug position={sourcePos} jackId={sourceId} color={color} />
+        <Plug position={destPos} jackId={destId} color={color} />
         <mesh geometry={wireGeometry}>
             <PlasticMaterial color={color} />
         </mesh>
@@ -36,6 +38,7 @@ export default function Wire({ start, end }: WireProps) {
 type PlugProps = {
     color: THREE.Color
     position: THREE.Vector3
+    jackId: string
 }
 
 function Plug({ color, position }: PlugProps) {
