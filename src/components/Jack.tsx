@@ -1,15 +1,21 @@
 import { GroupProps, ThreeEvent } from '@react-three/fiber'
 import { useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
-import { WireConnection } from '../App'
+import { WireConnection, WireConnectionInProgress } from '../App'
 import { MetalMaterial } from './materials/Materials'
 import { generateUUID } from 'three/src/math/MathUtils.js'
 
 export type JackProps = GroupProps & {
     audioNode: AudioNode
-    connect: (audioConnection: WireConnection) => void
+    connect: (audioConnection: WireConnectionInProgress) => void
     setControlsDisabled: (x: boolean) => void
     wires: WireConnection[]
+}
+
+export type JackRef = {
+    id: string
+    position: THREE.Vector3
+    audioNode: AudioNode
 }
 
 type JackPropsInternal = GroupProps & {
@@ -57,15 +63,15 @@ function Jack({plugged, ...props}: JackPropsInternal) {
 export function OutputJack({ audioNode, setControlsDisabled, connect, wires, ...props }: JackProps) {
     const [id] = useState<string>(generateUUID())
 
-    const plugged = useMemo(() => wires.some((w) => w.sourceId === id), [wires, id])
+    const plugged = useMemo(() => wires.some((w) => w.source!.id === id), [wires, id])
 
     const onPointerDown = (e: ThreeEvent<PointerEvent>) => {
         if (plugged) { return }
         console.log("connect output", audioNode)
         setControlsDisabled(true)
-        const pos = new THREE.Vector3()
-        e.eventObject.getWorldPosition(pos)
-        connect({ sourcePos: pos, sourceId: id, sourceNode: audioNode })
+        const position = new THREE.Vector3()
+        e.eventObject.getWorldPosition(position)
+        connect({ source: { id, position, audioNode } })
     }
 
     const onPointerUp = (e: ThreeEvent<PointerEvent>) => {
@@ -73,9 +79,9 @@ export function OutputJack({ audioNode, setControlsDisabled, connect, wires, ...
         e.stopPropagation()
         console.log("to output", audioNode)
         setControlsDisabled(false)
-        const pos = new THREE.Vector3()
-        e.eventObject.getWorldPosition(pos)
-        connect({ sourcePos: pos, sourceId: id, sourceNode: audioNode })
+        const position = new THREE.Vector3()
+        e.eventObject.getWorldPosition(position)
+        connect({ source: { id, position, audioNode } })
     }
 
     return <Jack {...props} onPointerDown={onPointerDown} onPointerUp={onPointerUp} plugged={plugged} />
@@ -84,15 +90,15 @@ export function OutputJack({ audioNode, setControlsDisabled, connect, wires, ...
 export function InputJack({ audioNode, setControlsDisabled, connect, wires, ...props }: JackProps) {
     const [id] = useState<string>(generateUUID())
 
-    const plugged = useMemo(() => wires.some((w) => w.destId === id), [wires, id])
+    const plugged = useMemo(() => wires.some((w) => w.dest!.id === id), [wires, id])
 
     const onPointerDown = (e: ThreeEvent<PointerEvent>) => {
         if (plugged) { return }
         console.log("connect input", audioNode)
         setControlsDisabled(true)
-        const pos = new THREE.Vector3()
-        e.eventObject.getWorldPosition(pos)
-        connect({ destPos: pos, destId: id, destNode: audioNode })
+        const position = new THREE.Vector3()
+        e.eventObject.getWorldPosition(position)
+        connect({ dest: { id, position, audioNode } })
     }
 
     const onPointerUp = (e: ThreeEvent<PointerEvent>) => {
@@ -100,9 +106,9 @@ export function InputJack({ audioNode, setControlsDisabled, connect, wires, ...p
         e.stopPropagation()
         console.log("to input", audioNode)
         setControlsDisabled(false)
-        const pos = new THREE.Vector3()
-        e.eventObject.getWorldPosition(pos)
-        connect({ destPos: pos, destId: id, destNode: audioNode })
+        const position = new THREE.Vector3()
+        e.eventObject.getWorldPosition(position)
+        connect({ dest: { id, position, audioNode } })
     }
 
     return <Jack {...props} onPointerDown={onPointerDown} onPointerUp={onPointerUp} plugged={plugged} />

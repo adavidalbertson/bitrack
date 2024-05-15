@@ -17,9 +17,10 @@ export type WireProps = {
     destPos: THREE.Vector3
     sourceId: string
     destId: string
+    unplug: (jackId: string) => void
 }
 
-export default function Wire({ sourcePos: sourcePos, destPos: destPos, sourceId, destId }: WireProps) {
+export default function Wire({ sourcePos: sourcePos, destPos: destPos, sourceId, destId, unplug }: WireProps) {
     const ref = useRef<THREE.Group>(null!)
     const [color] = useState(new THREE.Color(wireColors[Math.floor(Math.random() * wireColors.length)]))
     const path = [sourcePos.clone().setZ(0.775), sourcePos.clone().setZ(0.9), destPos.clone().setZ(0.9), destPos.clone().setZ(0.775)]
@@ -27,8 +28,8 @@ export default function Wire({ sourcePos: sourcePos, destPos: destPos, sourceId,
     const wireGeometry = new THREE.TubeGeometry(curve, 64, 0.05, 8, false)
 
     return <group ref={ref}>
-        <Plug position={sourcePos} jackId={sourceId} color={color} />
-        <Plug position={destPos} jackId={destId} color={color} />
+        <Plug position={sourcePos} jackId={sourceId} color={color} unplug={unplug} />
+        <Plug position={destPos} jackId={destId} color={color} unplug={unplug} />
         <mesh geometry={wireGeometry}>
             <PlasticMaterial color={color} />
         </mesh>
@@ -39,10 +40,13 @@ type PlugProps = {
     color: THREE.Color
     position: THREE.Vector3
     jackId: string
+    unplug: (jackId: string) => void
 }
 
-function Plug({ color, position }: PlugProps) {
-    return <group>
+function Plug({ color, position, jackId, unplug }: PlugProps) {
+    return <group
+            onPointerDown={() => unplug(jackId)}
+        >
         <mesh rotation={[Math.PI / 2, 0, 0]} position={position}>
             <cylinderGeometry args={[0.1, 0.1, 0.5, 32, 1, false]} />
             <MetalMaterial />
