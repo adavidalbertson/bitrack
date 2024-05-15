@@ -1,11 +1,11 @@
 import { MapControls } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { useRef, useState } from 'react'
+import { JackRef } from './components/Jack'
 import Wire from './components/Wire'
 import Oscillator from './modules/Oscillator'
 import Output from './modules/Output'
 import Power from './modules/Power'
-import { JackRef } from './components/Jack'
 
 
 export type WireConnection = {
@@ -41,7 +41,7 @@ export default function App() {
         setIsDragging(true)
         const existingConnection = wires.find(w => w.source.id === jackId || w.dest.id === jackId)!
         existingConnection.source.audioNode.disconnect(existingConnection.dest.audioNode)
-        setDraggingConnection(existingConnection.dest.id === jackId ? {source: existingConnection.source} : {dest: existingConnection.dest})
+        setDraggingConnection(existingConnection.dest.id === jackId ? { source: existingConnection.source } : { dest: existingConnection.dest })
         setWires(oldwires => oldwires.filter(w => w.source.id !== jackId && w.dest.id !== w.dest.id))
     }
 
@@ -68,7 +68,7 @@ export default function App() {
             <Oscillator position={[0, 1.75, 0]} connect={plug} setControlsDisabled={setControlsDisabled} audioCtx={audioCtx.current} wires={wires} />
             <Oscillator position={[0, -1.75, 0]} connect={plug} setControlsDisabled={setControlsDisabled} audioCtx={audioCtx.current} wires={wires} />
             <Output position={[1.5, 0, 0]} connect={plug} setControlsDisabled={setControlsDisabled} audioCtx={audioCtx.current} wires={wires} />
-            {wires.map((w, i) => <Wire sourcePos={w.source.position} destPos={w.dest.position} sourceId={w.source.id} destId={w.dest.id} key={i} unplug={unplug} />)}
+            {wires.map((w, i) => <Wire connection={w} key={i} unplug={unplug} />)}
             <MapControls enabled={!isDragging && !controlsDisabled} />
         </Canvas>
     )
