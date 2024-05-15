@@ -25,7 +25,7 @@ export default function Knob({ setControlsDisabled, updateParameter = () => { },
     const [value, setValue] = useState(initialValue)
 
     const calculateNewValue = (value: number, deltaY: number, deltaX: number) => Math.max(minValue, Math.min(value - (maxValue - minValue) * ((deltaY / 1000) - (deltaX / 10000)), maxValue))
-    const calculateRotation = (value: number) => (value / (maxValue - minValue)) * (-3 * Math.PI / 2) + ((maxValue + minValue)) * (3 * Math.PI / 4)
+    const calculateRotation = (value: number) => ((value - minValue) / (maxValue - minValue)) * (-3 * Math.PI / 2) + (3 * Math.PI / 4)
 
     return <group
         {...props}

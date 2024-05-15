@@ -40,7 +40,7 @@ export default function Oscillator({ setControlsDisabled, connect, audioCtx, ...
     return <group
         {...props}
     >
-        <Knob setControlsDisabled={setControlsDisabled} position={[0, 1, 0]} updateParameter={updateFreq} minValue={100} maxValue={300} initialValue={200} />
+        <Knob setControlsDisabled={setControlsDisabled} position={[0, 1, 0]} updateParameter={updateFreq} minValue={110} maxValue={440} initialValue={220} />
         <OutputJack position={[0, 0, 0]} setControlsDisabled={setControlsDisabled} audioNode={osc.current} connect={connect} />
         <mesh position={[0, 0, -0.5]}>
             <boxGeometry args={[1, 3, 1]} />
