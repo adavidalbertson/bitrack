@@ -42,7 +42,7 @@ export default function App() {
         const existingConnection = wires.find(w => w.source.id === jackId || w.dest.id === jackId)!
         existingConnection.source.audioNode.disconnect(existingConnection.dest.audioNode)
         setDraggingConnection(existingConnection.dest.id === jackId ? { source: existingConnection.source } : { dest: existingConnection.dest })
-        setWires(oldwires => oldwires.filter(w => w.source.id !== jackId && w.dest.id !== w.dest.id))
+        setWires(oldwires => oldwires.filter(w => w.source.id !== jackId && w.dest.id !== jackId))
     }
 
     const powerSwitch = (powered: boolean) => {
