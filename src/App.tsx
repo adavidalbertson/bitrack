@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber'
 import { useRef, useState } from 'react'
 import { JackRef } from './components/Jack'
 import Wire from './components/Wire'
+import Mixer from './modules/Mixer'
 import Oscillator from './modules/Oscillator'
 import Output from './modules/Output'
 import Power from './modules/Power'
@@ -40,7 +41,11 @@ export default function App() {
     const unplug = (jackId: string) => {
         setIsDragging(true)
         const existingConnection = wires.find(w => w.source.id === jackId || w.dest.id === jackId)!
-        existingConnection.source.audioNode.disconnect(existingConnection.dest.audioNode)
+        try {
+            existingConnection.source.audioNode.disconnect(existingConnection.dest.audioNode)
+        } catch {
+            // Sometimes they're already disconnected
+        }
         setDraggingConnection(existingConnection.dest.id === jackId ? { source: existingConnection.source } : { dest: existingConnection.dest })
         setWires(oldwires => oldwires.filter(w => w.source.id !== jackId && w.dest.id !== jackId))
     }
@@ -64,10 +69,11 @@ export default function App() {
             <pointLight position={[-5, 5, 20]} decay={0} intensity={Math.PI} />
             <pointLight position={[-10, 5, 1]} decay={0} intensity={Math.PI} />
             <pointLight position={[10, 15, 1]} decay={0} intensity={Math.PI} />
-            <Power position={[-1.5, 0.75, 0]} powerSwitch={powerSwitch} />
-            <Oscillator position={[0, 1.75, 0]} connect={plug} setControlsDisabled={setControlsDisabled} audioCtx={audioCtx.current} wires={wires} />
-            <Oscillator position={[0, -1.75, 0]} connect={plug} setControlsDisabled={setControlsDisabled} audioCtx={audioCtx.current} wires={wires} />
-            <Output position={[1.5, 0, 0]} connect={plug} setControlsDisabled={setControlsDisabled} audioCtx={audioCtx.current} wires={wires} />
+            <Power position={[-2.25, 0.75, 0]} powerSwitch={powerSwitch} />
+            <Oscillator position={[-0.75, 0.75, 0]} connect={plug} setControlsDisabled={setControlsDisabled} audioCtx={audioCtx.current} wires={wires} />
+            <Oscillator position={[0.75, 0.75, 0]} connect={plug} setControlsDisabled={setControlsDisabled} audioCtx={audioCtx.current} wires={wires} />
+            <Mixer position={[0, -2, 0]} numInputs={4} connect={plug} setControlsDisabled={setControlsDisabled} audioCtx={audioCtx.current} wires={wires} />
+            <Output position={[2.25, 0.75, 0]} connect={plug} setControlsDisabled={setControlsDisabled} audioCtx={audioCtx.current} wires={wires} />
             {wires.map((w, i) => <Wire connection={w} key={i} unplug={unplug} />)}
             <MapControls enabled={!isDragging && !controlsDisabled} />
         </Canvas>

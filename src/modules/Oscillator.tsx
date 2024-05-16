@@ -9,7 +9,6 @@ export default function Oscillator({ setControlsDisabled, connect, audioCtx, wir
         type: "triangle",
         frequency: freq,
     }))
-    const amp = useRef(new GainNode(audioCtx, { gain: 1 }))
 
     useEffect(() => {
         try {
@@ -21,11 +20,6 @@ export default function Oscillator({ setControlsDisabled, connect, audioCtx, wir
             type: "triangle",
             frequency: freq,
         })
-        // TODO: Move amp to its own module
-        amp.current = new GainNode(audioCtx, {
-            gain: 1,
-        })
-        osc.current.connect(amp.current)
         osc.current.start()
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -33,7 +27,7 @@ export default function Oscillator({ setControlsDisabled, connect, audioCtx, wir
 
     const updateFreq = (f: number) => {
         setFreq(f)
-        osc.current.frequency.cancelScheduledValues
+        osc.current.frequency.cancelScheduledValues(audioCtx.currentTime)
         osc.current.frequency.exponentialRampToValueAtTime(f, audioCtx.currentTime + 0.2)
     }
 
