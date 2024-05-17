@@ -1,6 +1,6 @@
 import { MapControls } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
-import { useRef, useState } from 'react'
+import { createContext, useRef, useState } from 'react'
 import { JackRef } from './components/Jack'
 import Wire from './components/Wire'
 import Mixer from './modules/Mixer'
@@ -18,6 +18,15 @@ export type WireConnectionInProgress = {
     source?: JackRef
     dest?: JackRef
 }
+
+export type ModuleProps = {
+    setControlsDisabled: (x: boolean) => void
+    connect: (audioConnection: WireConnectionInProgress) => void
+    audioCtx: AudioContext
+    wires: WireConnection[]
+}
+
+export const ModuleContext = createContext<ModuleProps>(null!)
 
 export default function App() {
     const [isDragging, setIsDragging] = useState<boolean>(false)
@@ -62,20 +71,22 @@ export default function App() {
     }
 
     return (
-        <Canvas onPointerUp={() => { console.log("Release without plugging"); setIsDragging(false); setDraggingConnection(null!) }}>
-            <ambientLight intensity={Math.PI} />
-            <spotLight position={[5, 5, 20]} angle={0.75} penumbra={1} decay={0} intensity={Math.PI / 2} />
-            <spotLight position={[-5, -5, 20]} angle={0.75} penumbra={1} decay={0} intensity={Math.PI / 2} />
-            <pointLight position={[-5, 5, 20]} decay={0} intensity={Math.PI} />
-            <pointLight position={[-10, 5, 1]} decay={0} intensity={Math.PI} />
-            <pointLight position={[10, 15, 1]} decay={0} intensity={Math.PI} />
-            <Power position={[-2.25, 0.75, 0]} powerSwitch={powerSwitch} />
-            <Oscillator position={[-0.75, 0.75, 0]} connect={plug} setControlsDisabled={setControlsDisabled} audioCtx={audioCtx.current} wires={wires} />
-            <Oscillator position={[0.75, 0.75, 0]} connect={plug} setControlsDisabled={setControlsDisabled} audioCtx={audioCtx.current} wires={wires} />
-            <Mixer position={[0, -2, 0]} numInputs={4} connect={plug} setControlsDisabled={setControlsDisabled} audioCtx={audioCtx.current} wires={wires} />
-            <Output position={[2.25, 0.75, 0]} connect={plug} setControlsDisabled={setControlsDisabled} audioCtx={audioCtx.current} wires={wires} />
-            {wires.map((w, i) => <Wire connection={w} key={i} unplug={unplug} />)}
-            <MapControls enabled={!isDragging && !controlsDisabled} />
-        </Canvas>
+        <ModuleContext.Provider value={{ setControlsDisabled, connect: plug, audioCtx: audioCtx.current, wires }} >
+            <Canvas onPointerUp={() => { console.log("Release without plugging"); setIsDragging(false); setDraggingConnection(null!) }}>
+                <ambientLight intensity={Math.PI} />
+                <spotLight position={[5, 5, 20]} angle={0.75} penumbra={1} decay={0} intensity={Math.PI / 2} />
+                <spotLight position={[-5, -5, 20]} angle={0.75} penumbra={1} decay={0} intensity={Math.PI / 2} />
+                <pointLight position={[-5, 5, 20]} decay={0} intensity={Math.PI} />
+                <pointLight position={[-10, 5, 1]} decay={0} intensity={Math.PI} />
+                <pointLight position={[10, 15, 1]} decay={0} intensity={Math.PI} />
+                <Power position={[-2.25, 0.75, 0]} powerSwitch={powerSwitch} />
+                <Oscillator position={[-0.75, 0.75, 0]} />
+                <Oscillator position={[0.75, 0.75, 0]} />
+                <Mixer position={[0, -2, 0]} numInputs={4} />
+                <Output position={[2.25, 0.75, 0]} />
+                {wires.map((w, i) => <Wire connection={w} key={i} unplug={unplug} />)}
+                <MapControls enabled={!isDragging && !controlsDisabled} />
+            </Canvas>
+        </ModuleContext.Provider>
     )
 }

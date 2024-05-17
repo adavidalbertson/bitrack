@@ -1,15 +1,12 @@
 import { GroupProps, ThreeEvent } from '@react-three/fiber'
-import { useMemo, useRef, useState } from 'react'
+import { useContext, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
-import { WireConnection, WireConnectionInProgress } from '../App'
-import { MetalMaterial } from './materials/Materials'
 import { generateUUID } from 'three/src/math/MathUtils.js'
+import { ModuleContext } from '../App'
+import { MetalMaterial } from './materials/Materials'
 
 export type JackProps = GroupProps & {
     audioNode: AudioNode
-    connect: (audioConnection: WireConnectionInProgress) => void
-    setControlsDisabled: (x: boolean) => void
-    wires: WireConnection[]
 }
 
 export type JackRef = {
@@ -22,7 +19,7 @@ type JackPropsInternal = GroupProps & {
     plugged: boolean
 }
 
-function Jack({plugged, ...props}: JackPropsInternal) {
+function Jack({ plugged, ...props }: JackPropsInternal) {
     const ref = useRef<THREE.Group>(null!)
     const [hovered, hover] = useState(false)
 
@@ -60,7 +57,8 @@ function Jack({plugged, ...props}: JackPropsInternal) {
     )
 }
 
-export function OutputJack({ audioNode, setControlsDisabled, connect, wires, ...props }: JackProps) {
+export function OutputJack({ audioNode, ...props }: JackProps) {
+    const { wires, setControlsDisabled, connect } = useContext(ModuleContext)
     const [id] = useState<string>(generateUUID())
 
     const plugged = useMemo(() => wires.some((w) => w.source!.id === id), [wires, id])
@@ -87,7 +85,8 @@ export function OutputJack({ audioNode, setControlsDisabled, connect, wires, ...
     return <Jack {...props} onPointerDown={onPointerDown} onPointerUp={onPointerUp} plugged={plugged} />
 }
 
-export function InputJack({ audioNode, setControlsDisabled, connect, wires, ...props }: JackProps) {
+export function InputJack({ audioNode, ...props }: JackProps) {
+    const { wires, setControlsDisabled, connect } = useContext(ModuleContext)
     const [id] = useState<string>(generateUUID())
 
     const plugged = useMemo(() => wires.some((w) => w.dest!.id === id), [wires, id])
