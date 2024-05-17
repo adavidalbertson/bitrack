@@ -7,14 +7,14 @@ export type PowerProps = ModuleProps & {
     powerSwitch: (powered: boolean) => void
 }
 
-export default function Power({ powerSwitch, color = 'black', ...props }: PowerProps) {
+export default function Power({ powerSwitch, color = 0x101010, ...props }: PowerProps) {
     const [powered, setPowered] = useState(false)
 
     return <group
         {...props}
     >
         <LED position={[-0.3, 0, 0]} intensity={powered ? 1 : 0} />
-        <mesh position={[-0, 0, -0.5]}>
+        <mesh position={[-0, 0, -0.5]} castShadow receiveShadow>
             <boxGeometry args={[1, 1.5, 1]} />
             <meshStandardMaterial color={color} roughness={1} metalness={0.5} />
         </mesh>

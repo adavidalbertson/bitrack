@@ -26,10 +26,10 @@ export default function Wire({ connection, unplug }: WireProps) {
     const curve = new THREE.CatmullRomCurve3(path, false, "chordal", 0.75)
     const wireGeometry = new THREE.TubeGeometry(curve, 64, 0.05, 8, false)
 
-    return <group ref={ref}>
+    return <group ref={ref} castShadow receiveShadow>
         <Plug jack={connection.source} color={color} unplug={unplug} />
         <Plug jack={connection.dest} color={color} unplug={unplug} />
-        <mesh geometry={wireGeometry}>
+        <mesh geometry={wireGeometry} castShadow receiveShadow>
             <PlasticMaterial color={color} />
         </mesh>
     </group>
@@ -45,15 +45,15 @@ function Plug({ color, jack, unplug }: PlugProps) {
     return <group
         onPointerDown={() => unplug(jack.id)}
     >
-        <mesh rotation={[Math.PI / 2, 0, 0]} position={jack.position}>
+        <mesh rotation={[Math.PI / 2, 0, 0]} position={jack.position} castShadow receiveShadow>
             <cylinderGeometry args={[0.1, 0.1, 0.5, 32, 1, false]} />
             <MetalMaterial />
         </mesh>
-        <mesh rotation={[Math.PI / 2, 0, 0]} position={jack.position.clone().setZ(0.325)}>
+        <mesh rotation={[Math.PI / 2, 0, 0]} position={jack.position.clone().setZ(0.325)} castShadow receiveShadow>
             <cylinderGeometry args={[0.13, 0.13, 0.3, 32, 1, false]} />
             <PlasticMaterial color={color} />
         </mesh>
-        <mesh rotation={[Math.PI / 2, 0, 0]} position={jack.position.clone().setZ(0.625)}>
+        <mesh rotation={[Math.PI / 2, 0, 0]} position={jack.position.clone().setZ(0.625)} castShadow receiveShadow>
             <cylinderGeometry args={[0.1, 0.13, 0.3, 32, 1, false]} />
             <PlasticMaterial color={color} />
         </mesh>

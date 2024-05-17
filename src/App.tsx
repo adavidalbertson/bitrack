@@ -1,4 +1,4 @@
-import { MapControls } from '@react-three/drei'
+import { Environment, Lightformer, MapControls, SoftShadows } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { createContext, useRef, useState } from 'react'
 import { InputJackRef, JackRef } from './components/Jack'
@@ -75,22 +75,31 @@ export default function App() {
 
     return (
         <ConnectionContext.Provider value={{ setControlsDisabled, connect: plug, audioCtx: audioCtx.current, wires }} >
-            <Canvas onPointerUp={() => { console.log("Release without plugging"); setIsDragging(false); setDraggingConnection(null!) }}>
-                <ambientLight intensity={Math.PI} />
-                <spotLight position={[5, 5, 20]} angle={0.75} penumbra={1} decay={0} intensity={Math.PI / 2} />
-                <spotLight position={[-5, -5, 20]} angle={0.75} penumbra={1} decay={0} intensity={Math.PI / 2} />
-                <pointLight position={[-5, 5, 20]} decay={0} intensity={Math.PI} />
-                <pointLight position={[-10, 5, 1]} decay={0} intensity={Math.PI} />
-                <pointLight position={[10, 15, 1]} decay={0} intensity={Math.PI} />
+            <Canvas shadows onPointerUp={() => { setIsDragging(false); setDraggingConnection(null!) }}>
+                <ambientLight intensity={1} />
+                <directionalLight position={[5, 5, 10]} shadow-mapSize={2048} shadow-bias={-0.0001} castShadow intensity={5}>
+                    <orthographicCamera attach="shadow-camera" args={[-5, 5, 10, -5, 1, 100]} />
+                </directionalLight>
                 <Power position={[-3, 0.75, 0]} powerSwitch={powerSwitch} color={'darkslategray'} />
                 <Oscillator position={[-1.5, 0.75, 0]} />
                 <Oscillator position={[0, 0.75, 0]} />
-                <Oscillator position={[1.5, 0.75, 0]} minFreq={0.1} initialFreq={1} maxFreq={10} color={'darkgray'} />
+                <Oscillator position={[1.5, 0.75, 0]} minFreq={0.1} initialFreq={1} maxFreq={20} color={'darkgray'} />
                 <Mixer position={[0, -2, 0]} numInputs={4} />
                 <Output position={[3, 0.75, 0]} color={'dimgray'} />
                 {wires.map((w, i) => <Wire connection={w} key={i} unplug={unplug} />)}
                 <MapControls enabled={!isDragging && !controlsDisabled} />
+                <mesh receiveShadow scale={20} position={[0, 0, -1.01]} >
+                    <planeGeometry />
+                    <shadowMaterial transparent opacity={0.5} />
+                </mesh>
+                <SoftShadows size={40} samples={20} />
+                <Environment resolution={64} >
+                    <group rotation={[-Math.PI * 0 / 4, 0, 0]}>
+                        <Lightformer form="ring" intensity={1} rotation-x={Math.PI / 2} position={[0, 5, -9]} scale={[2, 100, 1]} />
+                        <Lightformer form="rect" intensity={0.5} rotation-y={-Math.PI / 2} position={[10, 1, 0]} scale={[100, 10, 1]} />
+                    </group>
+                </Environment>
             </Canvas>
-        </ConnectionContext.Provider>
+        </ConnectionContext.Provider >
     )
 }

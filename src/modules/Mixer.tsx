@@ -8,7 +8,7 @@ export type MixerProps = ModuleProps & {
     numInputs?: number
 }
 
-export default function Mixer({ numInputs = 2, color = 'black', ...props }: MixerProps) {
+export default function Mixer({ numInputs = 2, color = 0x101010, ...props }: MixerProps) {
     const { audioCtx } = useContext(ConnectionContext)
     const [inputs, setInputs] = useState<GainNode[]>([])
     const [output, setOutput] = useState<ChannelMergerNode>(new ChannelMergerNode(audioCtx, { numberOfInputs: numInputs }))
@@ -41,7 +41,7 @@ export default function Mixer({ numInputs = 2, color = 'black', ...props }: Mixe
             </group>
         )}
         <OutputJack position={[0.75 * numInputs / 2, 0, 0]} audioNode={output} />
-        <mesh position={[0, 0, -0.5]}>
+        <mesh position={[0, 0, -0.5]} castShadow receiveShadow>
             <boxGeometry args={[0.75 * (numInputs + 1), 1.25, 1]} />
             <meshStandardMaterial color={color} roughness={1} metalness={0.5} />
         </mesh>

@@ -36,12 +36,12 @@ export default function Knob({ updateParameter = () => { }, minValue = 0, maxVal
         onWheel={(e: ThreeEvent<WheelEvent>) => { const v = calculateNewValue(value, e.deltaY, e.deltaX); setValue(v); updateParameter(v) }}
     >
         {/* Flange */}
-        <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, flangeHeight / 2]}>
+        <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, flangeHeight / 2]} castShadow receiveShadow>
             <cylinderGeometry args={[knobRadius, flangeRadius, flangeHeight, 32, 1, false, 0]} />
             <PlasticMaterial hovered={hovered} />
         </mesh>
         {/* Knob */}
-        <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, knobHeight / 2]}>
+        <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, knobHeight / 2]} castShadow receiveShadow>
             <cylinderGeometry args={[knobRadius, knobRadius, knobHeight, 32, 1, false]} />
             <MetalMaterial hovered={hovered} />
         </mesh>

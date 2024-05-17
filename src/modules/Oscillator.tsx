@@ -10,7 +10,7 @@ export type OscillatorProps = ModuleProps & {
     initialFreq?: number
 }
 
-export default function Oscillator({ minFreq = 110, initialFreq = 220, maxFreq = 440, color = 'black', ...props }: OscillatorProps) {
+export default function Oscillator({ minFreq = 110, initialFreq = 220, maxFreq = 440, color = 0x101010, ...props }: OscillatorProps) {
     const { audioCtx } = useContext(ConnectionContext)
     const [freq, setFreq] = useState(220)
     const osc = useRef(new OscillatorNode(audioCtx, {
@@ -52,7 +52,7 @@ export default function Oscillator({ minFreq = 110, initialFreq = 220, maxFreq =
         <Knob position={[0, 0.33333, 0]} updateParameter={updateFreqModAmt} minValue={0} maxValue={100} initialValue={1} />
         <InputJack position={[0, -0.33333, 0]} audioNode={freqModAmt.current} />
         <OutputJack position={[0, -1, 0]} audioNode={osc.current} />
-        <mesh position={[0, 0, -0.5]}>
+        <mesh position={[0, 0, -0.5]} castShadow receiveShadow>
             <boxGeometry args={[1, 3, 1]} />
             <meshStandardMaterial color={color} roughness={1} metalness={0.5} />
         </mesh>
