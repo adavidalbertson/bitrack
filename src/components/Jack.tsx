@@ -9,10 +9,18 @@ export type JackProps = GroupProps & {
     audioNode: AudioNode
 }
 
+export type InputJackProps = Omit<JackProps, 'audioNode'> & {
+    audioNode: AudioNode | AudioParam
+}
+
 export type JackRef = {
     id: string
     position: THREE.Vector3
     audioNode: AudioNode
+}
+
+export type InputJackRef = Omit<JackRef, 'audioNode'> & {
+    audioNode: AudioNode | AudioParam
 }
 
 type JackPropsInternal = GroupProps & {
@@ -85,7 +93,7 @@ export function OutputJack({ audioNode, ...props }: JackProps) {
     return <Jack {...props} onPointerDown={onPointerDown} onPointerUp={onPointerUp} plugged={plugged} />
 }
 
-export function InputJack({ audioNode, ...props }: JackProps) {
+export function InputJack({ audioNode, ...props }: InputJackProps) {
     const { wires, setControlsDisabled, connect } = useContext(ConnectionContext)
     const [id] = useState<string>(generateUUID())
 

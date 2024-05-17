@@ -1,7 +1,7 @@
 import { MapControls } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { createContext, useRef, useState } from 'react'
-import { JackRef } from './components/Jack'
+import { InputJackRef, JackRef } from './components/Jack'
 import Wire from './components/Wire'
 import Mixer from './modules/Mixer'
 import Oscillator from './modules/Oscillator'
@@ -16,7 +16,7 @@ export type WireConnection = {
 
 export type WireConnectionInProgress = {
     source?: JackRef
-    dest?: JackRef
+    dest?: InputJackRef
 }
 
 export const ConnectionContext = createContext<{
@@ -37,7 +37,12 @@ export default function App() {
         const fullConnection = { ...draggingConnection, ...connection }
         if (fullConnection.source && fullConnection.dest && fullConnection.source !== fullConnection.dest) {
             setWires(oldWires => [...oldWires, fullConnection as WireConnection])
-            fullConnection.source.audioNode.connect(fullConnection.dest.audioNode)
+            // Dang this is awkward
+            if ((fullConnection.dest.audioNode as AudioNode).connect) {
+                fullConnection.source.audioNode.connect(fullConnection.dest.audioNode as AudioNode)
+            } else {
+                fullConnection.source.audioNode.connect(fullConnection.dest.audioNode as AudioParam)
+            }
             setIsDragging(false)
         } else {
             setDraggingConnection(connection)
@@ -77,11 +82,12 @@ export default function App() {
                 <pointLight position={[-5, 5, 20]} decay={0} intensity={Math.PI} />
                 <pointLight position={[-10, 5, 1]} decay={0} intensity={Math.PI} />
                 <pointLight position={[10, 15, 1]} decay={0} intensity={Math.PI} />
-                <Power position={[-2.25, 0.75, 0]} powerSwitch={powerSwitch} color={'darkslategray'} />
-                <Oscillator position={[-0.75, 0.75, 0]} />
-                <Oscillator position={[0.75, 0.75, 0]} />
+                <Power position={[-3, 0.75, 0]} powerSwitch={powerSwitch} color={'darkslategray'} />
+                <Oscillator position={[-1.5, 0.75, 0]} />
+                <Oscillator position={[0, 0.75, 0]} />
+                <Oscillator position={[1.5, 0.75, 0]} minFreq={0.1} initialFreq={1} maxFreq={10} color={'darkgray'} />
                 <Mixer position={[0, -2, 0]} numInputs={4} />
-                <Output position={[2.25, 0.75, 0]} color={'dimgray'} />
+                <Output position={[3, 0.75, 0]} color={'dimgray'} />
                 {wires.map((w, i) => <Wire connection={w} key={i} unplug={unplug} />)}
                 <MapControls enabled={!isDragging && !controlsDisabled} />
             </Canvas>
