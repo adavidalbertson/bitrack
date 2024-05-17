@@ -5,6 +5,7 @@ import { ModuleProps } from "../components/Props";
 
 export default function Output({ color = 'black', ...props }: ModuleProps) {
     const { audioCtx } = useContext(ConnectionContext)
+
     return <group
         {...props}
     >

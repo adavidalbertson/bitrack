@@ -1,4 +1,5 @@
 import { useState } from "react";
+import LED from "../components/LED";
 import { PlasticMaterial } from "../components/materials/Materials";
 import { ModuleProps } from "../components/Props";
 
@@ -12,6 +13,7 @@ export default function Power({ powerSwitch, color = 'black', ...props }: PowerP
     return <group
         {...props}
     >
+        <LED position={[-0.3, 0, 0]} intensity={powered ? 1 : 0} />
         <mesh position={[-0, 0, -0.5]}>
             <boxGeometry args={[1, 1.5, 1]} />
             <meshStandardMaterial color={color} roughness={1} metalness={0.5} />
