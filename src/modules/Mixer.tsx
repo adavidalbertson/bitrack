@@ -1,15 +1,15 @@
-import { GroupProps } from "@react-three/fiber"
 import { useContext, useEffect, useState } from "react"
-import { ModuleContext } from "../App"
+import { ConnectionContext } from "../App"
 import { InputJack, OutputJack } from "../components/Jack"
 import Knob from "../components/Knob"
+import { ModuleProps } from "../components/Props"
 
-export type MixerProps = GroupProps & {
+export type MixerProps = ModuleProps & {
     numInputs?: number
 }
 
-export default function Mixer({ numInputs = 2, ...props }: MixerProps) {
-    const { audioCtx } = useContext(ModuleContext)
+export default function Mixer({ numInputs = 2, color = 'black', ...props }: MixerProps) {
+    const { audioCtx } = useContext(ConnectionContext)
     const [inputs, setInputs] = useState<GainNode[]>([])
     const [output, setOutput] = useState<ChannelMergerNode>(new ChannelMergerNode(audioCtx, { numberOfInputs: numInputs }))
 
@@ -43,7 +43,7 @@ export default function Mixer({ numInputs = 2, ...props }: MixerProps) {
         <OutputJack position={[0.75 * numInputs / 2, 0, 0]} audioNode={output} />
         <mesh position={[0, 0, -0.5]}>
             <boxGeometry args={[0.75 * (numInputs + 1), 1.25, 1]} />
-            <meshStandardMaterial color={'black'} roughness={1} metalness={0.5} />
+            <meshStandardMaterial color={color} roughness={1} metalness={0.5} />
         </mesh>
     </group>
 }

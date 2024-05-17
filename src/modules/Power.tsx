@@ -1,12 +1,12 @@
-import { GroupProps } from "@react-three/fiber";
 import { useState } from "react";
 import { PlasticMaterial } from "../components/materials/Materials";
+import { ModuleProps } from "../components/Props";
 
-export type PowerProps = GroupProps & {
+export type PowerProps = ModuleProps & {
     powerSwitch: (powered: boolean) => void
 }
 
-export default function Power({ powerSwitch, ...props }: PowerProps) {
+export default function Power({ powerSwitch, color = 'black', ...props }: PowerProps) {
     const [powered, setPowered] = useState(false)
 
     return <group
@@ -14,7 +14,7 @@ export default function Power({ powerSwitch, ...props }: PowerProps) {
     >
         <mesh position={[-0, 0, -0.5]}>
             <boxGeometry args={[1, 1.5, 1]} />
-            <meshStandardMaterial color={'darkSlateGray'} roughness={1} metalness={0.5} />
+            <meshStandardMaterial color={color} roughness={1} metalness={0.5} />
         </mesh>
         <mesh position={[0, 0, -0.125]} >
             <boxGeometry args={[0.27, 0.53, 0.27]} />

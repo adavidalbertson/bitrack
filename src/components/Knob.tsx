@@ -1,6 +1,6 @@
 import { GroupProps, ThreeEvent } from "@react-three/fiber";
 import { useContext, useState } from "react";
-import { ModuleContext } from "../App";
+import { ConnectionContext } from "../App";
 import { MetalMaterial, PlasticMaterial } from "./materials/Materials";
 
 
@@ -21,7 +21,7 @@ export type KnobProps = GroupProps & {
 }
 
 export default function Knob({ updateParameter = () => { }, minValue = 0, maxValue = 1, initialValue = 0, knurls = 16, flangeHeight = 0.1, flangeRadius = 0.25, knobHeight = 0.25, knobRadius = 0.15, knurlDepth = 0.01, knurlHeight = 0.24, ...props }: KnobProps) {
-    const { setControlsDisabled } = useContext(ModuleContext)
+    const { setControlsDisabled } = useContext(ConnectionContext)
     const [hovered, hover] = useState(false)
     const [value, setValue] = useState(initialValue)
 

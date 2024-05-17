@@ -1,11 +1,11 @@
-import { GroupProps } from "@react-three/fiber";
 import { useContext, useEffect, useRef, useState } from "react";
-import { ModuleContext } from "../App";
+import { ConnectionContext } from "../App";
 import { OutputJack } from "../components/Jack";
 import Knob from "../components/Knob";
+import { ModuleProps } from "../components/Props";
 
-export default function Oscillator({ ...props }: GroupProps) {
-    const { audioCtx } = useContext(ModuleContext)
+export default function Oscillator({ color = 'black', ...props }: ModuleProps) {
+    const { audioCtx } = useContext(ConnectionContext)
     const [freq, setFreq] = useState(220)
     const osc = useRef(new OscillatorNode(audioCtx, {
         type: "triangle",
@@ -39,7 +39,7 @@ export default function Oscillator({ ...props }: GroupProps) {
         <OutputJack position={[0, 0, 0]} audioNode={osc.current} />
         <mesh position={[0, 0, -0.5]}>
             <boxGeometry args={[1, 3, 1]} />
-            <meshStandardMaterial color={'greenyellow'} roughness={1} metalness={0.5} />
+            <meshStandardMaterial color={color} roughness={1} metalness={0.5} />
         </mesh>
     </group>
 }

@@ -2,7 +2,7 @@ import { GroupProps, ThreeEvent } from '@react-three/fiber'
 import { useContext, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { generateUUID } from 'three/src/math/MathUtils.js'
-import { ModuleContext } from '../App'
+import { ConnectionContext } from '../App'
 import { MetalMaterial } from './materials/Materials'
 
 export type JackProps = GroupProps & {
@@ -58,7 +58,7 @@ function Jack({ plugged, ...props }: JackPropsInternal) {
 }
 
 export function OutputJack({ audioNode, ...props }: JackProps) {
-    const { wires, setControlsDisabled, connect } = useContext(ModuleContext)
+    const { wires, setControlsDisabled, connect } = useContext(ConnectionContext)
     const [id] = useState<string>(generateUUID())
 
     const plugged = useMemo(() => wires.some((w) => w.source!.id === id), [wires, id])
@@ -86,7 +86,7 @@ export function OutputJack({ audioNode, ...props }: JackProps) {
 }
 
 export function InputJack({ audioNode, ...props }: JackProps) {
-    const { wires, setControlsDisabled, connect } = useContext(ModuleContext)
+    const { wires, setControlsDisabled, connect } = useContext(ConnectionContext)
     const [id] = useState<string>(generateUUID())
 
     const plugged = useMemo(() => wires.some((w) => w.dest!.id === id), [wires, id])

@@ -19,14 +19,12 @@ export type WireConnectionInProgress = {
     dest?: JackRef
 }
 
-export type ModuleProps = {
+export const ConnectionContext = createContext<{
     setControlsDisabled: (x: boolean) => void
     connect: (audioConnection: WireConnectionInProgress) => void
     audioCtx: AudioContext
     wires: WireConnection[]
-}
-
-export const ModuleContext = createContext<ModuleProps>(null!)
+}>(null!)
 
 export default function App() {
     const [isDragging, setIsDragging] = useState<boolean>(false)
@@ -71,7 +69,7 @@ export default function App() {
     }
 
     return (
-        <ModuleContext.Provider value={{ setControlsDisabled, connect: plug, audioCtx: audioCtx.current, wires }} >
+        <ConnectionContext.Provider value={{ setControlsDisabled, connect: plug, audioCtx: audioCtx.current, wires }} >
             <Canvas onPointerUp={() => { console.log("Release without plugging"); setIsDragging(false); setDraggingConnection(null!) }}>
                 <ambientLight intensity={Math.PI} />
                 <spotLight position={[5, 5, 20]} angle={0.75} penumbra={1} decay={0} intensity={Math.PI / 2} />
@@ -79,14 +77,14 @@ export default function App() {
                 <pointLight position={[-5, 5, 20]} decay={0} intensity={Math.PI} />
                 <pointLight position={[-10, 5, 1]} decay={0} intensity={Math.PI} />
                 <pointLight position={[10, 15, 1]} decay={0} intensity={Math.PI} />
-                <Power position={[-2.25, 0.75, 0]} powerSwitch={powerSwitch} />
+                <Power position={[-2.25, 0.75, 0]} powerSwitch={powerSwitch} color={'darkslategray'} />
                 <Oscillator position={[-0.75, 0.75, 0]} />
                 <Oscillator position={[0.75, 0.75, 0]} />
                 <Mixer position={[0, -2, 0]} numInputs={4} />
-                <Output position={[2.25, 0.75, 0]} />
+                <Output position={[2.25, 0.75, 0]} color={'dimgray'} />
                 {wires.map((w, i) => <Wire connection={w} key={i} unplug={unplug} />)}
                 <MapControls enabled={!isDragging && !controlsDisabled} />
             </Canvas>
-        </ModuleContext.Provider>
+        </ConnectionContext.Provider>
     )
 }
