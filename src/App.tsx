@@ -86,13 +86,15 @@ export default function App() {
                 <directionalLight position={[5, 5, 10]} shadow-mapSize={2048} shadow-bias={-0.0001} castShadow intensity={5}>
                     <orthographicCamera attach="shadow-camera" args={[-5, 5, 10, -5, 1, 100]} />
                 </directionalLight>
-                <Power position={[-3, 0.75, 0]} powerSwitch={powerSwitch} color={'darkslategray'} />
-                <Oscillator position={[-1.5, 0.75, 0]} />
-                <Oscillator position={[0, 0.75, 0]} />
+                <Oscillator position={[-3.5, 0.75, 0]} minFreq={0.1} initialFreq={1} maxFreq={20} waveType={'triangle'} color={'darkgray'} label={'LFO'} labelColor={0x0000aa} labelAngle={0} />
+                <Oscillator position={[-3.5 + 1.5, 0.75, 0]} label={"VCO1"} />
+                <Oscillator position={[-2.5 + 1.5, 0.75, 0]} label={"VCO2"} />
+                <Oscillator position={[-1.5 + 1.5, 0.75, 0]} label={"VCO3"} waveType={'square'} />
                 <Oscillator position={[1.5, 0.75, 0]} minFreq={0.1} initialFreq={1} maxFreq={20} waveType={'triangle'} color={'darkgray'} label={'LFO'} labelColor={0x0000aa} labelAngle={0} />
-                <Filter position={[-2, -2, 0]} />
-                <Mixer position={[2, -2, 0]} numInputs={4} />
-                <Output position={[3, 0.75, 0]} color={'dimgray'} />
+                <Filter position={[-2.3, -2, 0]} />
+                <Mixer position={[1.7, -2, 0]} numInputs={4} />
+                <Power position={[3, 1.75, 0]} powerSwitch={powerSwitch} color={'darkslategray'} />
+                <Output position={[3, -0.25, 0]} color={'dimgray'} />
                 {wires.map((w, i) => <Wire connection={w} key={i} unplug={unplug} />)}
                 <MapControls enabled={!isDragging && !controlsDisabled} />
                 <mesh receiveShadow scale={20} position={[0, 0, -1.01]} >

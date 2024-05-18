@@ -52,10 +52,10 @@ export default function Oscillator({ minFreq = 110, initialFreq = 220, maxFreq =
             <MetalMaterial color={labelColor} />
         </Text>
         <group position={[0, -0.15, 0]}>
-            <Knob position={[0, 1.2, 0]} updateParameter={updateFreq} minValue={minFreq} maxValue={maxFreq} initialValue={initialFreq} exponential label={"FREQ"} labelColor={labelColor} labelAngle={labelAngle} />
-            <Knob position={[0, 0.4, 0]} updateParameter={updateFreqModAmt} minValue={0} maxValue={100} initialValue={1} label={"MOD AMT"} labelColor={labelColor} labelAngle={labelAngle} />
-            <InputJack position={[0, -0.4, 0]} audioNode={freqModAmt.current} label={'VCO MOD'} labelColor={labelColor} labelAngle={labelAngle} />
-            <OutputJack position={[0, -1.2, 0]} audioNode={osc.current} label={'VCO OUT'} labelColor={labelColor} labelAngle={labelAngle} />
+            <Knob position={[0, 1.2, 0]} updateParameter={updateFreq} minValue={minFreq} maxValue={maxFreq} initialValue={initialFreq} exponential label={label + ' FREQ'} labelColor={labelColor} labelAngle={labelAngle} />
+            <Knob position={[0, 0.4, 0]} updateParameter={updateFreqModAmt} minValue={0} maxValue={100} initialValue={1} label={label + ' MOD AMT'} labelColor={labelColor} labelAngle={labelAngle} />
+            <InputJack position={[0, -0.4, 0]} audioNode={freqModAmt.current} label={label + ' MOD'} labelColor={labelColor} labelAngle={labelAngle} />
+            <OutputJack position={[0, -1.2, 0]} audioNode={osc.current} label={label + ' OUT'} labelColor={labelColor} labelAngle={labelAngle} />
         </group>
         <mesh position={[0, 0, -0.5]} castShadow receiveShadow>
             <boxGeometry args={[1, 3.5, 1]} />
