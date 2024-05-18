@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber'
 import { createContext, useRef, useState } from 'react'
 import { InputJackRef, JackRef } from './components/Jack'
 import Wire from './components/Wire'
+import Filter from './modules/Filter'
 import Mixer from './modules/Mixer'
 import Oscillator from './modules/Oscillator'
 import Output from './modules/Output'
@@ -89,7 +90,8 @@ export default function App() {
                 <Oscillator position={[-1.5, 0.75, 0]} />
                 <Oscillator position={[0, 0.75, 0]} />
                 <Oscillator position={[1.5, 0.75, 0]} minFreq={0.1} initialFreq={1} maxFreq={20} color={'darkgray'} label={'LFO'} labelColor={0x0000aa} labelAngle={0} />
-                <Mixer position={[0, -2, 0]} numInputs={4} />
+                <Filter position={[-2, -2, 0]} />
+                <Mixer position={[2, -2, 0]} numInputs={4} />
                 <Output position={[3, 0.75, 0]} color={'dimgray'} />
                 {wires.map((w, i) => <Wire connection={w} key={i} unplug={unplug} />)}
                 <MapControls enabled={!isDragging && !controlsDisabled} />

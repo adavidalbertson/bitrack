@@ -1,10 +1,10 @@
+import { Text } from "@react-three/drei";
 import { useContext, useEffect, useRef, useState } from "react";
 import { ConnectionContext } from "../App";
 import { InputJack, OutputJack } from "../components/Jack";
 import Knob from "../components/Knob";
-import { ModuleProps } from "../components/Props";
-import { Text } from "@react-three/drei";
 import { MetalMaterial } from "../components/materials/Materials";
+import { ModuleProps } from "../components/Props";
 
 export type OscillatorProps = ModuleProps & {
     minFreq?: number
@@ -16,7 +16,7 @@ export default function Oscillator({ minFreq = 110, initialFreq = 220, maxFreq =
     const { audioCtx } = useContext(ConnectionContext)
     const [freq, setFreq] = useState(220)
     const osc = useRef(new OscillatorNode(audioCtx, {
-        type: "triangle",
+        type: "sawtooth",
         frequency: freq,
     }))
     const freqModAmt = useRef(new GainNode(audioCtx, { gain: 1 }))
