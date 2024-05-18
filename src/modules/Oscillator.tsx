@@ -3,6 +3,8 @@ import { ConnectionContext } from "../App";
 import { InputJack, OutputJack } from "../components/Jack";
 import Knob from "../components/Knob";
 import { ModuleProps } from "../components/Props";
+import { Text } from "@react-three/drei";
+import { MetalMaterial } from "../components/materials/Materials";
 
 export type OscillatorProps = ModuleProps & {
     minFreq?: number
@@ -10,7 +12,7 @@ export type OscillatorProps = ModuleProps & {
     initialFreq?: number
 }
 
-export default function Oscillator({ minFreq = 110, initialFreq = 220, maxFreq = 440, color = 0x101010, ...props }: OscillatorProps) {
+export default function Oscillator({ minFreq = 110, initialFreq = 220, maxFreq = 440, color = 0x101010, label = 'VCO', labelColor, labelAngle = Math.PI / 6, ...props }: OscillatorProps) {
     const { audioCtx } = useContext(ConnectionContext)
     const [freq, setFreq] = useState(220)
     const osc = useRef(new OscillatorNode(audioCtx, {
@@ -29,6 +31,7 @@ export default function Oscillator({ minFreq = 110, initialFreq = 220, maxFreq =
             type: "triangle",
             frequency: freq,
         })
+        freqModAmt.current = new GainNode(audioCtx, { gain: 1 })
         freqModAmt.current.connect(osc.current.frequency)
         osc.current.start()
 
@@ -48,12 +51,18 @@ export default function Oscillator({ minFreq = 110, initialFreq = 220, maxFreq =
     return <group
         {...props}
     >
-        <Knob position={[0, 1, 0]} updateParameter={updateFreq} minValue={minFreq} maxValue={maxFreq} initialValue={initialFreq} />
-        <Knob position={[0, 0.33333, 0]} updateParameter={updateFreqModAmt} minValue={0} maxValue={100} initialValue={1} />
-        <InputJack position={[0, -0.33333, 0]} audioNode={freqModAmt.current} />
-        <OutputJack position={[0, -1, 0]} audioNode={osc.current} />
+        <Text position={[0, 1.5, 0.0001]} scale={0.2}>
+            {label}
+            <MetalMaterial color={labelColor} />
+        </Text>
+        <group position={[0, -0.15, 0]}>
+            <Knob position={[0, 1.2, 0]} updateParameter={updateFreq} minValue={minFreq} maxValue={maxFreq} initialValue={initialFreq} label={"FREQ"} labelColor={labelColor} labelAngle={labelAngle} />
+            <Knob position={[0, 0.4, 0]} updateParameter={updateFreqModAmt} minValue={0} maxValue={100} initialValue={1} label={"MOD AMT"} labelColor={labelColor} labelAngle={labelAngle} />
+            <InputJack position={[0, -0.4, 0]} audioNode={freqModAmt.current} label={'VCO MOD'} labelColor={labelColor} labelAngle={labelAngle} />
+            <OutputJack position={[0, -1.2, 0]} audioNode={osc.current} label={'VCO OUT'} labelColor={labelColor} labelAngle={labelAngle} />
+        </group>
         <mesh position={[0, 0, -0.5]} castShadow receiveShadow>
-            <boxGeometry args={[1, 3, 1]} />
+            <boxGeometry args={[1, 3.5, 1]} />
             <meshStandardMaterial color={color} roughness={1} metalness={0.5} />
         </mesh>
     </group>

@@ -24,7 +24,12 @@ export const ConnectionContext = createContext<{
     connect: (audioConnection: WireConnectionInProgress) => void
     audioCtx: AudioContext
     wires: WireConnection[]
-}>(null!)
+}>({
+    setControlsDisabled: () => { },
+    connect: () => { },
+    audioCtx: new AudioContext(),
+    wires: []
+})
 
 export default function App() {
     const [isDragging, setIsDragging] = useState<boolean>(false)
@@ -83,7 +88,7 @@ export default function App() {
                 <Power position={[-3, 0.75, 0]} powerSwitch={powerSwitch} color={'darkslategray'} />
                 <Oscillator position={[-1.5, 0.75, 0]} />
                 <Oscillator position={[0, 0.75, 0]} />
-                <Oscillator position={[1.5, 0.75, 0]} minFreq={0.1} initialFreq={1} maxFreq={20} color={'darkgray'} />
+                <Oscillator position={[1.5, 0.75, 0]} minFreq={0.1} initialFreq={1} maxFreq={20} color={'darkgray'} label={'LFO'} labelColor={0x0000aa} labelAngle={0} />
                 <Mixer position={[0, -2, 0]} numInputs={4} />
                 <Output position={[3, 0.75, 0]} color={'dimgray'} />
                 {wires.map((w, i) => <Wire connection={w} key={i} unplug={unplug} />)}
