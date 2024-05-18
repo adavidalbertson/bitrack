@@ -10,13 +10,13 @@ export type OscillatorProps = ModuleProps & {
     minFreq?: number
     maxFreq?: number
     initialFreq?: number
+    waveType?: "sine" | "square" | "sawtooth" | "triangle"
 }
 
 export default function Oscillator({ minFreq = 110, initialFreq = 220, maxFreq = 440, waveType = 'sawtooth', color = 0x101010, label = 'VCO', labelColor, labelAngle = Math.PI / 6, ...props }: OscillatorProps) {
     const { audioCtx } = useContext(ConnectionContext)
-    const [freq, setFreq] = useState(220)
     const osc = useRef(new OscillatorNode(audioCtx, {
-        type: "sawtooth",
+        type: waveType,
         frequency: initialFreq,
     }))
     const freqModAmt = useRef(new GainNode(audioCtx, { gain: 1 }))
@@ -28,13 +28,13 @@ export default function Oscillator({ minFreq = 110, initialFreq = 220, maxFreq =
             // Sometimes it's already stopped
         }
         osc.current = new OscillatorNode(audioCtx, {
-            type: "triangle",
+            type: waveType,
             frequency: osc.current.frequency.value,
         })
         freqModAmt.current = new GainNode(audioCtx, { gain: 1 })
         freqModAmt.current.connect(osc.current.frequency)
         osc.current.start()
-    }, [audioCtx])
+    }, [audioCtx, waveType])
 
     const updateFreq = (f: number) => {
         osc.current.frequency.exponentialRampToValueAtTime(f, audioCtx.currentTime + 0.2)

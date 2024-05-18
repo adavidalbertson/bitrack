@@ -89,7 +89,7 @@ export default function App() {
                 <Power position={[-3, 0.75, 0]} powerSwitch={powerSwitch} color={'darkslategray'} />
                 <Oscillator position={[-1.5, 0.75, 0]} />
                 <Oscillator position={[0, 0.75, 0]} />
-                <Oscillator position={[1.5, 0.75, 0]} minFreq={0.1} initialFreq={1} maxFreq={20} color={'darkgray'} label={'LFO'} labelColor={0x0000aa} labelAngle={0} />
+                <Oscillator position={[1.5, 0.75, 0]} minFreq={0.1} initialFreq={1} maxFreq={20} waveType={'triangle'} color={'darkgray'} label={'LFO'} labelColor={0x0000aa} labelAngle={0} />
                 <Filter position={[-2, -2, 0]} />
                 <Mixer position={[2, -2, 0]} numInputs={4} />
                 <Output position={[3, 0.75, 0]} color={'dimgray'} />
