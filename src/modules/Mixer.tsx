@@ -13,10 +13,10 @@ export type MixerProps = ModuleProps & {
 export default function Mixer({ numInputs = 2, color = 0x101010, label = "MIX", labelColor, labelAngle = Math.PI / 6, ...props }: MixerProps) {
     const { audioCtx } = useContext(ConnectionContext)
     const [inputs, setInputs] = useState<GainNode[]>([])
-    const [output, setOutput] = useState<ChannelMergerNode>(new ChannelMergerNode(audioCtx, { numberOfInputs: numInputs }))
+    const [output, setOutput] = useState<GainNode>(new GainNode(audioCtx, { gain: 1 }))
 
     useEffect(() => {
-        const nextOutput = new ChannelMergerNode(audioCtx, { numberOfInputs: numInputs })
+        const nextOutput = new GainNode(audioCtx, { gain: 1 })
 
         const nextInputs: GainNode[] = []
         for (let i = 0; i < numInputs; i++) {
