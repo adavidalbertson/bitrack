@@ -91,7 +91,7 @@ export default function App() {
                 <Oscillator position={[-2.5 + 1.5, 0.75, 0]} label={"VCO2"} />
                 <Oscillator position={[-1.5 + 1.5, 0.75, 0]} label={"VCO3"} waveType={'square'} />
                 <Oscillator position={[1.5, 0.75, 0]} minFreq={0.1} initialFreq={1} maxFreq={20} waveType={'triangle'} color={'darkgray'} label={'LFO'} labelColor={0x0000aa} labelAngle={0} />
-                <Filter position={[-2.3, -2, 0]} />
+                <Filter position={[-2.3, -2, 0]} color={0x103040} />
                 <Mixer position={[1.7, -2, 0]} numInputs={4} />
                 <Power position={[3, 1.75, 0]} powerSwitch={powerSwitch} color={'darkslategray'} />
                 <Output position={[3, -0.25, 0]} color={'dimgray'} />
