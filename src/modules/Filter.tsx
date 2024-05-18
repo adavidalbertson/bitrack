@@ -2,7 +2,7 @@ import { Text } from "@react-three/drei";
 import { useContext, useEffect, useRef } from "react";
 import { ConnectionContext } from "../App";
 import { InputJack, OutputJack } from "../components/Jack";
-import Knob from "../components/Knob";
+import { FlatKnob } from "../components/Knob";
 import { ModuleProps } from "../components/Props";
 import { MetalMaterial } from "../components/materials/Materials";
 
@@ -44,10 +44,10 @@ export default function Filter({ color, label = 'VCF', labelColor, labelAngle, .
             <OutputJack position={[3 * 0.75 / 2, 0, 0]} audioNode={vcf.current} label={"OUT"} labelColor={labelColor} labelAngle={labelAngle} />
         </group>
         <group position={[0, -0.3, 0]}>
-            <Knob position={[3 * -0.75 / 2, 0, 0]} minValue={10} initialValue={2000} maxValue={10000} exponential updateParameter={updateFreq} label={"CUTOFF"} labelColor={labelColor} labelAngle={labelAngle} />
-            <Knob position={[-0.75 / 2, 0, 0]} minValue={0} initialValue={100} maxValue={1000} updateParameter={updateVcfModAmt} label={"VCF MOD AMT"} labelColor={labelColor} labelAngle={labelAngle} />
-            <Knob position={[0.75 / 2, 0, 0]} minValue={0} initialValue={1} maxValue={25} updateParameter={updateResModAmt} label={"RES MOD AMT"} labelColor={labelColor} labelAngle={labelAngle} />
-            <Knob position={[3 * 0.75 / 2, 0, 0]} updateParameter={updateRes} minValue={0.1} initialValue={0.1} maxValue={25} label={"RES"} labelColor={labelColor} labelAngle={labelAngle} />
+            <FlatKnob position={[3 * -0.75 / 2, 0, 0]} minValue={10} initialValue={2000} maxValue={10000} exponential updateParameter={updateFreq} label={"CUTOFF"} labelColor={labelColor} labelAngle={labelAngle} />
+            <FlatKnob position={[-0.75 / 2, 0, 0]} minValue={0} initialValue={100} maxValue={1000} updateParameter={updateVcfModAmt} label={"VCF MOD AMT"} labelColor={labelColor} labelAngle={labelAngle} />
+            <FlatKnob position={[0.75 / 2, 0, 0]} minValue={0} initialValue={1} maxValue={25} updateParameter={updateResModAmt} label={"RES MOD AMT"} labelColor={labelColor} labelAngle={labelAngle} />
+            <FlatKnob position={[3 * 0.75 / 2, 0, 0]} updateParameter={updateRes} minValue={0.1} initialValue={0.1} maxValue={25} label={"RES"} labelColor={labelColor} labelAngle={labelAngle} />
         </group>
         <mesh position={[-0.1, -0.05, -0.5]} castShadow receiveShadow>
             <boxGeometry args={[3.1, 1.3, 1]} />
