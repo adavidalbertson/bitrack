@@ -12,6 +12,7 @@ export type KnobProps = ModuleProps & {
     minValue?: number
     maxValue?: number
     initialValue?: number
+    exponential?: boolean
 
     knobShapeParams?: KnobShapeParams
 }
@@ -36,13 +37,16 @@ const defaultKnobShape = {
     knurlHeight: 0.24
 }
 
-export default function Knob({ updateParameter = () => { }, minValue = 0, maxValue = 1, initialValue = 0, knobShapeParams, color, label, labelColor, labelAngle = 0, ...props }: KnobProps) {
+export default function Knob({ updateParameter = () => { }, minValue = 0, maxValue = 1, initialValue = 0, exponential = false, knobShapeParams, color, label, labelColor, labelAngle = 0, ...props }: KnobProps) {
     const { setControlsDisabled } = useContext(ConnectionContext)
     const [hovered, hover] = useState(false)
-    const [value, setValue] = useState(initialValue)
+    const [value, setValue] = useState(exponential ? Math.log2(initialValue) : initialValue)
 
-    const calculateNewValue = (value: number, deltaY: number, deltaX: number) => Math.max(minValue, Math.min(value - (maxValue - minValue) * ((deltaY / 1000) - (deltaX / 10000)), maxValue))
-    const calculateRotation = (value: number) => ((value - minValue) / (maxValue - minValue)) * (-3 * Math.PI / 2) + (3 * Math.PI / 4)
+    const actualMin = exponential ? Math.log2(minValue) : minValue
+    const actualMax = exponential ? Math.log2(maxValue) : maxValue
+
+    const calculateNewValue = (value: number, deltaY: number, deltaX: number) => { console.log(value); return Math.max(actualMin, Math.min(value - (actualMax - actualMin) * ((deltaY / 1000) - (deltaX / 10000)), actualMax)) }
+    const calculateRotation = (value: number) => ((value - actualMin) / (actualMax - actualMin)) * (-3 * Math.PI / 2) + (3 * Math.PI / 4)
 
     const shapeParams = { ...defaultKnobShape, ...knobShapeParams }
 
@@ -51,7 +55,7 @@ export default function Knob({ updateParameter = () => { }, minValue = 0, maxVal
             onPointerOver={() => { setControlsDisabled(true); hover(true) }}
             onPointerOut={() => { setControlsDisabled(false); hover(false) }}
             rotation={[0, 0, calculateRotation(value)]}
-            onWheel={(e: ThreeEvent<WheelEvent>) => { const v = calculateNewValue(value, e.deltaY, e.deltaX); setValue(v); updateParameter(v) }}
+            onWheel={(e: ThreeEvent<WheelEvent>) => { const v = calculateNewValue(value, e.deltaY, e.deltaX); setValue(v); updateParameter(exponential ? Math.pow(2, v) : v) }}
         >
             {/* Flange */}
             <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, shapeParams.flangeHeight / 2]} castShadow receiveShadow>

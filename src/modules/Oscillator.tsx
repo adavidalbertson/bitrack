@@ -1,5 +1,5 @@
 import { Text } from "@react-three/drei";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { ConnectionContext } from "../App";
 import { InputJack, OutputJack } from "../components/Jack";
 import Knob from "../components/Knob";
@@ -12,12 +12,12 @@ export type OscillatorProps = ModuleProps & {
     initialFreq?: number
 }
 
-export default function Oscillator({ minFreq = 110, initialFreq = 220, maxFreq = 440, color = 0x101010, label = 'VCO', labelColor, labelAngle = Math.PI / 6, ...props }: OscillatorProps) {
+export default function Oscillator({ minFreq = 110, initialFreq = 220, maxFreq = 440, waveType = 'sawtooth', color = 0x101010, label = 'VCO', labelColor, labelAngle = Math.PI / 6, ...props }: OscillatorProps) {
     const { audioCtx } = useContext(ConnectionContext)
     const [freq, setFreq] = useState(220)
     const osc = useRef(new OscillatorNode(audioCtx, {
         type: "sawtooth",
-        frequency: freq,
+        frequency: initialFreq,
     }))
     const freqModAmt = useRef(new GainNode(audioCtx, { gain: 1 }))
 
@@ -29,22 +29,18 @@ export default function Oscillator({ minFreq = 110, initialFreq = 220, maxFreq =
         }
         osc.current = new OscillatorNode(audioCtx, {
             type: "triangle",
-            frequency: freq,
+            frequency: osc.current.frequency.value,
         })
         freqModAmt.current = new GainNode(audioCtx, { gain: 1 })
         freqModAmt.current.connect(osc.current.frequency)
         osc.current.start()
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [audioCtx])
 
     const updateFreq = (f: number) => {
-        setFreq(f)
         osc.current.frequency.exponentialRampToValueAtTime(f, audioCtx.currentTime + 0.2)
     }
 
     const updateFreqModAmt = (g: number) => {
-        // setFreq(f)
         freqModAmt.current.gain.exponentialRampToValueAtTime(g, audioCtx.currentTime + 0.2)
     }
 
@@ -56,7 +52,7 @@ export default function Oscillator({ minFreq = 110, initialFreq = 220, maxFreq =
             <MetalMaterial color={labelColor} />
         </Text>
         <group position={[0, -0.15, 0]}>
-            <Knob position={[0, 1.2, 0]} updateParameter={updateFreq} minValue={minFreq} maxValue={maxFreq} initialValue={initialFreq} label={"FREQ"} labelColor={labelColor} labelAngle={labelAngle} />
+            <Knob position={[0, 1.2, 0]} updateParameter={updateFreq} minValue={minFreq} maxValue={maxFreq} initialValue={initialFreq} exponential label={"FREQ"} labelColor={labelColor} labelAngle={labelAngle} />
             <Knob position={[0, 0.4, 0]} updateParameter={updateFreqModAmt} minValue={0} maxValue={100} initialValue={1} label={"MOD AMT"} labelColor={labelColor} labelAngle={labelAngle} />
             <InputJack position={[0, -0.4, 0]} audioNode={freqModAmt.current} label={'VCO MOD'} labelColor={labelColor} labelAngle={labelAngle} />
             <OutputJack position={[0, -1.2, 0]} audioNode={osc.current} label={'VCO OUT'} labelColor={labelColor} labelAngle={labelAngle} />
