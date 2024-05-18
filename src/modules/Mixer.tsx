@@ -38,7 +38,7 @@ export default function Mixer({ numInputs = 2, color = 0x101010, label = "MIX", 
     >
         {inputs.map((v, i) =>
             <group position={[0.75 * (i - (numInputs) / 2), 0, 0]} key={i}>
-                <InputJack position={[0, 0.3, 0]} audioNode={v} label={"IN " + i} labelColor={labelColor} labelAngle={labelAngle} />
+                <InputJack position={[0, 0.3, 0]} audioNode={v} label={"IN " + (i + 1)} labelColor={labelColor} labelAngle={labelAngle} />
                 <Knob position={[0, -0.3, 0]} updateParameter={updateGain(i)} initialValue={v.gain.value} label={"LVL " + (i + 1)} labelColor={labelColor} labelAngle={labelAngle} />
             </group>
         )}
