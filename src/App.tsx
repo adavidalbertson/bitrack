@@ -2,22 +2,25 @@ import { Environment, Lightformer, MapControls, SoftShadows } from '@react-three
 import { Canvas } from '@react-three/fiber'
 import { createContext, useRef, useState } from 'react'
 import { InputJackRef, JackRef } from './components/Jack'
-import Wire, { WirePreview } from './components/Wire'
+import Wire, { WirePreview, createWireColor } from './components/Wire'
 import Filter from './modules/Filter'
 import Mixer from './modules/Mixer'
 import Oscillator from './modules/Oscillator'
 import Output from './modules/Output'
 import Power from './modules/Power'
+import { ColorRepresentation } from 'three'
 
 
 export type WireConnection = {
     source: JackRef
     dest: JackRef
+    color?: ColorRepresentation
 }
 
 export type PartialConnection = {
     source?: JackRef
     dest?: InputJackRef
+    color?: ColorRepresentation
 }
 
 export const ConnectionContext = createContext<{
@@ -40,7 +43,7 @@ export default function App() {
     const audioCtx = useRef<AudioContext>(new AudioContext())
 
     const plug = (connection: PartialConnection) => {
-        const fullConnection = { ...draggingConnection, ...connection }
+        const fullConnection = {...draggingConnection, ...connection }
         if (fullConnection.source && fullConnection.dest && fullConnection.source !== fullConnection.dest) {
             setWires(oldWires => [...oldWires, fullConnection as WireConnection])
             // Dang this is awkward
@@ -51,7 +54,7 @@ export default function App() {
             }
             setIsDragging(false)
         } else {
-            setDraggingConnection(connection)
+            setDraggingConnection({color: connection.color || createWireColor(), ...connection})
             setIsDragging(true)
         }
     }
@@ -64,7 +67,9 @@ export default function App() {
         } catch {
             // Sometimes they're already disconnected
         }
-        setDraggingConnection(existingConnection.dest.id === jackId ? { source: existingConnection.source } : { dest: existingConnection.dest })
+        const nextConnection: PartialConnection = existingConnection.dest.id === jackId ? { source: existingConnection.source } : { dest: existingConnection.dest }
+        nextConnection.color = existingConnection.color
+        setDraggingConnection(nextConnection)
         setWires(oldwires => oldwires.filter(w => w.source.id !== jackId && w.dest.id !== jackId))
     }
 

@@ -1,12 +1,12 @@
 import { ThreeEvent } from '@react-three/fiber'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import * as THREE from 'three'
 import { PartialConnection, WireConnection } from '../App'
-import { JackRef } from './Jack'
+import { InputJackRef } from './Jack'
 import { MetalMaterial, PlasticMaterial } from "./materials/Materials"
 
 const wireColors = [
-    0x000000,
+    'black',
     0x1f1f1f,
     0x3f3f3f,
     0x7f7f7f,
@@ -15,18 +15,21 @@ const wireColors = [
     0xdd0808,
 ]
 
+export function createWireColor(): THREE.ColorRepresentation {
+    return wireColors[Math.floor(Math.random() * wireColors.length)]
+}
+
 export type WireProps = {
     connection: WireConnection
     unplug: (jackId: string) => void
 }
 
 export default function Wire({ connection, unplug }: WireProps) {
-    const ref = useRef<THREE.Group>(null!)
-    const [color] = useState(new THREE.Color(wireColors[Math.floor(Math.random() * wireColors.length)]))
+    const color = connection.color ? connection.color : createWireColor()
     const path = [connection.source.position.clone().setZ(0.775), connection.source.position.clone().setZ(0.9), connection.dest.position.clone().setZ(0.9), connection.dest.position.clone().setZ(0.775)]
     const curve = new THREE.CatmullRomCurve3(path, false, "chordal", 0.75)
 
-    return <group ref={ref} castShadow receiveShadow>
+    return <group castShadow receiveShadow>
         <Plug jack={connection.source} color={color} unplug={unplug} />
         <Plug jack={connection.dest} color={color} unplug={unplug} />
         <mesh>
@@ -37,12 +40,12 @@ export default function Wire({ connection, unplug }: WireProps) {
 }
 
 type PlugProps = {
-    color: THREE.Color
-    jack: JackRef
-    unplug: (jackId: string) => void
+    color: THREE.ColorRepresentation
+    jack: InputJackRef
+    unplug?: (jackId: string) => void
 }
 
-function Plug({ color, jack, unplug }: PlugProps) {
+function Plug({ color, jack, unplug = () => {} }: PlugProps) {
     return <group
         onPointerDown={() => unplug(jack.id)}
     >
@@ -73,11 +76,10 @@ export function WirePreview({ connection }: WirePreviewProps) {
     const dragLooseEnd = (e: ThreeEvent<PointerEvent>) => {
         const intersect = new THREE.Vector3(0, 0, 0)
         e.ray.intersectPlane(intersectPlane, intersect)
-        console.log("Drag loose end", intersect)
         setLooseEnd(intersect)
     }
 
-    const [color] = useState(new THREE.Color(wireColors[Math.floor(Math.random() * wireColors.length)]))
+    const color = connection.color || createWireColor()
     const path = [jack.position.clone().setZ(0.775), jack.position.clone().setZ(0.9), looseEnd.clone().setZ(0.9), looseEnd.clone().setZ(0.775)]
     const curve = new THREE.CatmullRomCurve3(path, false, "chordal", 0.75)
 
@@ -97,7 +99,7 @@ export function WirePreview({ connection }: WirePreviewProps) {
 
 type PreviewPlugProps = {
     position: THREE.Vector3,
-    color: THREE.Color
+    color: THREE.ColorRepresentation
 }
 
 function PlugPreview({ color, position }: PreviewPlugProps) {

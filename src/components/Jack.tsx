@@ -120,7 +120,7 @@ export function InputJack({ audioNode, label, labelColor, ...props }: InputJackP
     const onPointerUp = (e: ThreeEvent<PointerEvent>) => {
         if (plugged) { return }
         e.stopPropagation()
-        console.log("to input", audioNode)
+        console.log("to input", e)
         setControlsDisabled(false)
         const position = new THREE.Vector3()
         e.eventObject.getWorldPosition(position)
