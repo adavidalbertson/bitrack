@@ -90,6 +90,7 @@ export function WirePreview({ connection }: WirePreviewProps) {
         </mesh>
         <mesh>
             <planeGeometry args={[20, 20]} />
+            <meshBasicMaterial transparent opacity={0} />
         </mesh>
     </group>
 }
