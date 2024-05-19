@@ -2,7 +2,7 @@ import { Environment, Lightformer, MapControls, SoftShadows } from '@react-three
 import { Canvas } from '@react-three/fiber'
 import { createContext, useRef, useState } from 'react'
 import { InputJackRef, JackRef } from './components/Jack'
-import Wire from './components/Wire'
+import Wire, { WirePreview } from './components/Wire'
 import Filter from './modules/Filter'
 import Mixer from './modules/Mixer'
 import Oscillator from './modules/Oscillator'
@@ -15,14 +15,14 @@ export type WireConnection = {
     dest: JackRef
 }
 
-export type WireConnectionInProgress = {
+export type PartialConnection = {
     source?: JackRef
     dest?: InputJackRef
 }
 
 export const ConnectionContext = createContext<{
     setControlsDisabled: (x: boolean) => void
-    connect: (audioConnection: WireConnectionInProgress) => void
+    connect: (audioConnection: PartialConnection) => void
     audioCtx: AudioContext
     wires: WireConnection[]
 }>({
@@ -36,10 +36,10 @@ export default function App() {
     const [isDragging, setIsDragging] = useState<boolean>(false)
     const [controlsDisabled, setControlsDisabled] = useState<boolean>(false)
     const [wires, setWires] = useState<WireConnection[]>([])
-    const [draggingConnection, setDraggingConnection] = useState<WireConnectionInProgress>({})
+    const [draggingConnection, setDraggingConnection] = useState<PartialConnection>({})
     const audioCtx = useRef<AudioContext>(new AudioContext())
 
-    const plug = (connection: WireConnectionInProgress) => {
+    const plug = (connection: PartialConnection) => {
         const fullConnection = { ...draggingConnection, ...connection }
         if (fullConnection.source && fullConnection.dest && fullConnection.source !== fullConnection.dest) {
             setWires(oldWires => [...oldWires, fullConnection as WireConnection])
@@ -96,6 +96,7 @@ export default function App() {
                 <Power position={[3, 1.75, 0]} powerSwitch={powerSwitch} color={'darkslategray'} />
                 <Output position={[3, -0.25, 0]} color={'dimgray'} />
                 {wires.map((w, i) => <Wire connection={w} key={i} unplug={unplug} />)}
+                {isDragging && <WirePreview connection={draggingConnection} />}
                 <MapControls enabled={!isDragging && !controlsDisabled} />
                 <mesh receiveShadow scale={20} position={[0, 0, -1.01]} >
                     <planeGeometry />

@@ -45,7 +45,7 @@ export default function Knob({ updateParameter = () => { }, minValue = 0, maxVal
     const actualMin = exponential ? Math.log2(minValue) : minValue
     const actualMax = exponential ? Math.log2(maxValue) : maxValue
 
-    const calculateNewValue = (value: number, deltaY: number, deltaX: number) => { console.log(value); return Math.max(actualMin, Math.min(value - (actualMax - actualMin) * ((deltaY / 1000) - (deltaX / 10000)), actualMax)) }
+    const calculateNewValue = (value: number, deltaY: number, deltaX: number) => Math.max(actualMin, Math.min(value - (actualMax - actualMin) * ((deltaY / 1000) - (deltaX / 10000)), actualMax))
     const calculateRotation = (value: number) => ((value - actualMin) / (actualMax - actualMin)) * (-3 * Math.PI / 2) + (3 * Math.PI / 4)
 
     const shapeParams = { ...defaultKnobShape, ...knobShapeParams }

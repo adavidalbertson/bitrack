@@ -1,6 +1,7 @@
+import { ThreeEvent } from '@react-three/fiber'
 import { useRef, useState } from 'react'
 import * as THREE from 'three'
-import { WireConnection } from '../App'
+import { PartialConnection, WireConnection } from '../App'
 import { JackRef } from './Jack'
 import { MetalMaterial, PlasticMaterial } from "./materials/Materials"
 
@@ -24,12 +25,12 @@ export default function Wire({ connection, unplug }: WireProps) {
     const [color] = useState(new THREE.Color(wireColors[Math.floor(Math.random() * wireColors.length)]))
     const path = [connection.source.position.clone().setZ(0.775), connection.source.position.clone().setZ(0.9), connection.dest.position.clone().setZ(0.9), connection.dest.position.clone().setZ(0.775)]
     const curve = new THREE.CatmullRomCurve3(path, false, "chordal", 0.75)
-    const wireGeometry = new THREE.TubeGeometry(curve, 64, 0.05, 8, false)
 
     return <group ref={ref} castShadow receiveShadow>
         <Plug jack={connection.source} color={color} unplug={unplug} />
         <Plug jack={connection.dest} color={color} unplug={unplug} />
-        <mesh geometry={wireGeometry} castShadow receiveShadow>
+        <mesh>
+            <tubeGeometry args={[curve, 64, 0.05, 8, false]} />
             <PlasticMaterial color={color} />
         </mesh>
     </group>
@@ -56,6 +57,61 @@ function Plug({ color, jack, unplug }: PlugProps) {
         <mesh rotation={[Math.PI / 2, 0, 0]} position={jack.position.clone().setZ(0.625)} castShadow receiveShadow>
             <cylinderGeometry args={[0.1, 0.13, 0.3, 32, 1, false]} />
             <PlasticMaterial color={color} />
+        </mesh>
+    </group>
+}
+
+export type WirePreviewProps = {
+    connection: PartialConnection
+}
+
+export function WirePreview({ connection }: WirePreviewProps) {
+    const jack = (connection.source || connection.dest)!
+    const intersectPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0)
+    const [looseEnd, setLooseEnd] = useState<THREE.Vector3>(jack.position)
+
+    const dragLooseEnd = (e: ThreeEvent<PointerEvent>) => {
+        const intersect = new THREE.Vector3(0, 0, 0)
+        e.ray.intersectPlane(intersectPlane, intersect)
+        console.log("Drag loose end", intersect)
+        setLooseEnd(intersect)
+    }
+
+    const [color] = useState(new THREE.Color(wireColors[Math.floor(Math.random() * wireColors.length)]))
+    const path = [jack.position.clone().setZ(0.775), jack.position.clone().setZ(0.9), looseEnd.clone().setZ(0.9), looseEnd.clone().setZ(0.775)]
+    const curve = new THREE.CatmullRomCurve3(path, false, "chordal", 0.75)
+
+    return <group onPointerMove={dragLooseEnd} castShadow receiveShadow>
+        <PlugPreview position={jack.position} color={color} />
+        <PlugPreview position={looseEnd} color={color} />
+        <mesh>
+            <tubeGeometry args={[curve, 64, 0.05, 8, false]} />
+            <PlasticMaterial color={color} transparent opacity={0.25} />
+        </mesh>
+        <mesh>
+            <planeGeometry args={[20, 20]} />
+        </mesh>
+    </group>
+}
+
+type PreviewPlugProps = {
+    position: THREE.Vector3,
+    color: THREE.Color
+}
+
+function PlugPreview({ color, position }: PreviewPlugProps) {
+    return <group>
+        <mesh rotation={[Math.PI / 2, 0, 0]} position={position} castShadow receiveShadow>
+            <cylinderGeometry args={[0.1, 0.1, 0.5, 32, 1, false]} />
+            <MetalMaterial transparent opacity={0.25} />
+        </mesh>
+        <mesh rotation={[Math.PI / 2, 0, 0]} position={position.clone().setZ(0.325)} castShadow receiveShadow>
+            <cylinderGeometry args={[0.13, 0.13, 0.3, 32, 1, false]} />
+            <PlasticMaterial color={color} transparent opacity={0.25} />
+        </mesh>
+        <mesh rotation={[Math.PI / 2, 0, 0]} position={position.clone().setZ(0.625)} castShadow receiveShadow>
+            <cylinderGeometry args={[0.1, 0.13, 0.3, 32, 1, false]} />
+            <PlasticMaterial color={color} transparent opacity={0.25} />
         </mesh>
     </group>
 }
