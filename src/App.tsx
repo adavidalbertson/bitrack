@@ -23,6 +23,9 @@ export type PartialConnection = {
     color?: ColorRepresentation
 }
 
+const mainAudioContext = new AudioContext()
+mainAudioContext.suspend()
+
 export const ConnectionContext = createContext<{
     setControlsDisabled: (x: boolean) => void
     connect: (audioConnection: PartialConnection) => void
@@ -31,7 +34,7 @@ export const ConnectionContext = createContext<{
 }>({
     setControlsDisabled: () => { },
     connect: () => { },
-    audioCtx: new AudioContext(),
+    audioCtx: mainAudioContext,
     wires: []
 })
 
@@ -40,7 +43,7 @@ export default function App() {
     const [controlsDisabled, setControlsDisabled] = useState<boolean>(false)
     const [wires, setWires] = useState<WireConnection[]>([])
     const [draggingConnection, setDraggingConnection] = useState<PartialConnection>({})
-    const audioCtx = useRef<AudioContext>(new AudioContext())
+    const audioCtx = useRef<AudioContext>(mainAudioContext)
 
     const plug = (connection: PartialConnection) => {
         const fullConnection = {...draggingConnection, ...connection }
@@ -74,7 +77,6 @@ export default function App() {
     }
 
     const powerSwitch = (powered: boolean) => {
-        console.log(audioCtx.current)
         if (powered) {
             console.log("power on!")
             audioCtx.current.resume()

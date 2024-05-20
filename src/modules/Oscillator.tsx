@@ -22,19 +22,21 @@ export default function Oscillator({ minFreq = 110, initialFreq = 220, maxFreq =
     const freqModAmt = useRef(new GainNode(audioCtx, { gain: 1 }))
 
     useEffect(() => {
+        start()
+    })
+
+    const start = () => {
         try {
-            osc.current.stop()
+            freqModAmt.current.connect(osc.current.frequency)
         } catch {
-            // Sometimes it's already stopped
+            // Usually already connected
         }
-        osc.current = new OscillatorNode(audioCtx, {
-            type: waveType,
-            frequency: osc.current.frequency.value,
-        })
-        freqModAmt.current = new GainNode(audioCtx, { gain: 1 })
-        freqModAmt.current.connect(osc.current.frequency)
-        osc.current.start()
-    }, [audioCtx, waveType])
+        try {
+            osc.current.start()
+        } catch {
+            // Usually already started
+        }
+    }
 
     const updateFreq = (f: number) => {
         osc.current.frequency.exponentialRampToValueAtTime(f, audioCtx.currentTime + 0.2)

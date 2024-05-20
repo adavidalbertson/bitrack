@@ -82,7 +82,6 @@ export function OutputJack({ audioNode, label, labelColor, ...props }: JackProps
 
     const onPointerDown = (e: ThreeEvent<PointerEvent>) => {
         if (plugged) { return }
-        console.log("connect output", audioNode)
         setControlsDisabled(true)
         const position = new THREE.Vector3()
         e.eventObject.getWorldPosition(position)
@@ -92,7 +91,6 @@ export function OutputJack({ audioNode, label, labelColor, ...props }: JackProps
     const onPointerUp = (e: ThreeEvent<PointerEvent>) => {
         if (plugged) { return }
         e.stopPropagation()
-        console.log("to output", audioNode)
         setControlsDisabled(false)
         const position = new THREE.Vector3()
         e.eventObject.getWorldPosition(position)
@@ -110,7 +108,6 @@ export function InputJack({ audioNode, label, labelColor, ...props }: InputJackP
 
     const onPointerDown = (e: ThreeEvent<PointerEvent>) => {
         if (plugged) { return }
-        console.log("connect input", audioNode)
         setControlsDisabled(true)
         const position = new THREE.Vector3()
         e.eventObject.getWorldPosition(position)
@@ -120,7 +117,6 @@ export function InputJack({ audioNode, label, labelColor, ...props }: InputJackP
     const onPointerUp = (e: ThreeEvent<PointerEvent>) => {
         if (plugged) { return }
         e.stopPropagation()
-        console.log("to input", e)
         setControlsDisabled(false)
         const position = new THREE.Vector3()
         e.eventObject.getWorldPosition(position)
