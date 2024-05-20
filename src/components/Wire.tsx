@@ -29,10 +29,10 @@ export default function Wire({ connection, unplug }: WireProps) {
     const path = [connection.source.position.clone().setZ(0.775), connection.source.position.clone().setZ(0.9), connection.dest.position.clone().setZ(0.9), connection.dest.position.clone().setZ(0.775)]
     const curve = new THREE.CatmullRomCurve3(path, false, "chordal", 0.75)
 
-    return <group castShadow receiveShadow>
+    return <group>
         <Plug jack={connection.source} color={color} unplug={unplug} />
         <Plug jack={connection.dest} color={color} unplug={unplug} />
-        <mesh>
+        <mesh castShadow receiveShadow>
             <tubeGeometry args={[curve, 64, 0.05, 8, false]} />
             <PlasticMaterial color={color} />
         </mesh>
@@ -83,10 +83,10 @@ export function WirePreview({ connection }: WirePreviewProps) {
     const path = [jack.position.clone().setZ(0.775), jack.position.clone().setZ(0.9), looseEnd.clone().setZ(0.9), looseEnd.clone().setZ(0.775)]
     const curve = new THREE.CatmullRomCurve3(path, false, "chordal", 0.75)
 
-    return <group onPointerMove={dragLooseEnd} castShadow receiveShadow>
+    return <group onPointerMove={dragLooseEnd} >
         <PlugPreview position={jack.position} color={color} />
         <PlugPreview position={looseEnd} color={color} />
-        <mesh>
+        <mesh castShadow receiveShadow>
             <tubeGeometry args={[curve, 64, 0.05, 8, false]} />
             <PlasticMaterial color={color} transparent opacity={0.25} />
         </mesh>
