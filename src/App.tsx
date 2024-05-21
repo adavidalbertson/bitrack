@@ -1,6 +1,7 @@
 import { Environment, Lightformer, MapControls, SoftShadows } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { createContext, useRef, useState } from 'react'
+import { ColorRepresentation } from 'three'
 import { InputJackRef, JackRef } from './components/Jack'
 import Wire, { WirePreview, createWireColor } from './components/Wire'
 import Filter from './modules/Filter'
@@ -8,8 +9,6 @@ import Mixer from './modules/Mixer'
 import Oscillator from './modules/Oscillator'
 import Output from './modules/Output'
 import Power from './modules/Power'
-import { ColorRepresentation } from 'three'
-import { PlasticMaterial } from './components/materials/Materials'
 
 
 export type WireConnection = {
@@ -47,7 +46,7 @@ export default function App() {
     const audioCtx = useRef<AudioContext>(mainAudioContext)
 
     const plug = (connection: PartialConnection) => {
-        const fullConnection = {...draggingConnection, ...connection }
+        const fullConnection = { ...draggingConnection, ...connection }
         if (fullConnection.source && fullConnection.dest && fullConnection.source !== fullConnection.dest) {
             setWires(oldWires => [...oldWires, fullConnection as WireConnection])
             // Dang this is awkward
@@ -58,7 +57,7 @@ export default function App() {
             }
             setIsDragging(false)
         } else {
-            setDraggingConnection({color: connection.color || createWireColor(), ...connection})
+            setDraggingConnection({ color: connection.color || createWireColor(), ...connection })
             setIsDragging(true)
         }
     }
@@ -79,11 +78,9 @@ export default function App() {
 
     const powerSwitch = (powered: boolean) => {
         if (powered) {
-            console.log("power on!")
             audioCtx.current.resume()
         } else {
             audioCtx.current.suspend()
-            console.log("power off!")
         }
     }
 
@@ -107,7 +104,7 @@ export default function App() {
                 {isDragging && <WirePreview connection={draggingConnection} />}
                 <MapControls enabled={!isDragging && !controlsDisabled} />
                 <mesh receiveShadow position={[0, 0, -1.01]} >
-                    <planeGeometry args={[20, 20]}/>
+                    <planeGeometry args={[20, 20]} />
                     <shadowMaterial transparent opacity={0.5} />
                 </mesh>
                 <SoftShadows size={40} samples={20} />

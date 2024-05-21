@@ -45,7 +45,7 @@ type PlugProps = {
     unplug?: (jackId: string) => void
 }
 
-function Plug({ color, jack, unplug = () => {} }: PlugProps) {
+function Plug({ color, jack, unplug = () => { } }: PlugProps) {
     return <group
         onPointerDown={() => unplug(jack.id)}
     >

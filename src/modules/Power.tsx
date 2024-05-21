@@ -1,8 +1,8 @@
+import { Text } from "@react-three/drei";
 import { useState } from "react";
 import LED from "../components/LED";
 import { MetalMaterial, PlasticMaterial } from "../components/materials/Materials";
 import { ModuleProps } from "../components/Props";
-import { Text } from "@react-three/drei";
 
 export type PowerProps = ModuleProps & {
     powerSwitch: (powered: boolean) => void
