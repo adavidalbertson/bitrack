@@ -3,12 +3,13 @@ import { Canvas } from '@react-three/fiber'
 import { createContext, useRef, useState } from 'react'
 import { ColorRepresentation } from 'three'
 import { InputJackRef, JackRef } from './components/Jack'
-import Wire, { WirePreview, createWireColor } from './components/Wire'
+import Wire, { WirePreview } from './components/Wire'
 import Filter from './modules/Filter'
 import Mixer from './modules/Mixer'
 import Oscillator from './modules/Oscillator'
 import Output from './modules/Output'
 import Power from './modules/Power'
+import { createWireColor } from './constants'
 
 
 export type WireConnection = {
