@@ -4,12 +4,13 @@ import { createContext, useRef, useState } from 'react'
 import { ColorRepresentation } from 'three'
 import { InputJackRef, JackRef } from './components/Jack'
 import Wire, { WirePreview } from './components/Wire'
+import { createWireColor } from './constants'
 import Filter from './modules/Filter'
 import Mixer from './modules/Mixer'
+import Mult from './modules/Mult'
 import Oscillator from './modules/Oscillator'
 import Output from './modules/Output'
 import Power from './modules/Power'
-import { createWireColor } from './constants'
 
 
 export type WireConnection = {
@@ -101,6 +102,8 @@ export default function App() {
                 <Mixer position={[1.7, -2, 0]} numInputs={4} />
                 <Power position={[3, 1.75, 0]} powerSwitch={powerSwitch} color={'darkslategray'} />
                 <Output position={[3, -0.25, 0]} color={'dimgray'} />
+                <Mult position={[-4.75, 1.38, 0]} rotation={[0, 0, Math.PI / 2]} numOutputs={3} labelAngle={0} />
+                <Mult position={[-4.75, -1.33, 0]} rotation={[0, 0, -Math.PI / 2]} numOutputs={4} labelAngle={Math.PI} />
                 {wires.map((w, i) => <Wire connection={w} key={i} unplug={unplug} />)}
                 {isDragging && <WirePreview connection={draggingConnection} />}
                 <MapControls enabled={!isDragging && !controlsDisabled} />
