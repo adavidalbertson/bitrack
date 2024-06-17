@@ -6,6 +6,7 @@ import { generateUUID } from 'three/src/math/MathUtils.js'
 import { ConnectionContext } from '../App'
 import { MetalMaterial } from './materials/Materials'
 import { ModuleProps } from './Props'
+import { BufferGeometryUtils } from 'three/examples/jsm/Addons.js'
 
 export type JackProps = ModuleProps & {
     audioNode: AudioNode
@@ -29,7 +30,35 @@ type JackPropsInternal = ModuleProps & {
     plugged: boolean
 }
 
-function Jack({ plugged, label, labelColor, labelAngle = 0, ...props }: JackPropsInternal) {
+const nut = new THREE.CylinderGeometry(0.25, 0.25, 0.05, 6, 1, false)
+nut.rotateX(Math.PI / 2)
+nut.translate(0, 0, 0.025)
+
+const nutFace = new THREE.CylinderGeometry(0.15, 0.25, 0.02, 6, 1, true)
+nutFace.rotateX(Math.PI / 2)
+nutFace.translate(0, 0, 0.06)
+
+const outerBarrel = new THREE.CylinderGeometry(0.15, 0.15, 0.15, 32, 1, true)
+outerBarrel.rotateX(Math.PI / 2)
+outerBarrel.translate(0, 0, 0.0625)
+
+const innerBarrel = new THREE.CylinderGeometry(0.13, 0.13, 0.19, 32, 1, true)
+innerBarrel.rotateX(Math.PI / 2)
+innerBarrel.translate(0, 0, 0.0625)
+
+const barrelFace = new THREE.CylinderGeometry(0.13, 0.15, 0.02, 32, 1, true)
+barrelFace.rotateX(Math.PI / 2)
+barrelFace.translate(0, 0, 0.1475)
+
+const metalMesh = BufferGeometryUtils.mergeGeometries([
+    nut,
+    nutFace,
+    outerBarrel,
+    // innerBarrel,
+    barrelFace
+])
+
+export function Jack({ plugged, label, labelColor, labelAngle = 0, ...props }: JackPropsInternal) {
     const [hovered, hover] = useState(false)
 
     return (
@@ -39,29 +68,15 @@ function Jack({ plugged, label, labelColor, labelAngle = 0, ...props }: JackProp
             <group
                 onPointerOver={(event) => (event.stopPropagation(), hover(true))}
                 onPointerOut={() => hover(false)}>
-                <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.025]} >
-                    <cylinderGeometry args={[0.25, 0.25, 0.05, 6, 1, false]} />
-                    <MetalMaterial hovered={hovered && !plugged} />
-                </mesh>
-                <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.06]}>
-                    <cylinderGeometry args={[0.15, 0.25, 0.02, 6, 1, true]} />
-                    <MetalMaterial hovered={hovered && !plugged} />
-                </mesh>
                 <mesh rotation={[0, 0, 0]} position={[0, 0, 0.0625]}>
                     <ringGeometry args={[0, 0.15, 12]} />
                     <meshStandardMaterial color={'black'} roughness={1} metalness={0} />
                 </mesh>
-                <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.0625]}>
-                    <cylinderGeometry args={[0.15, 0.15, 0.15, 32, 1, true]} />
+                <mesh geometry={metalMesh}>
                     <MetalMaterial hovered={hovered && !plugged} />
                 </mesh>
-                <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.0625]}>
-                    <cylinderGeometry args={[0.13, 0.13, 0.19, 32, 1, true]} />
+                <mesh geometry={innerBarrel}>
                     <MetalMaterial hovered={hovered && !plugged} side={THREE.BackSide} />
-                </mesh>
-                <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.1475]}>
-                    <cylinderGeometry args={[0.13, 0.15, 0.02, 32, 1, true]} />
-                    <MetalMaterial hovered={hovered && !plugged} />
                 </mesh>
             </group>
             <group rotation={[0, 0, labelAngle]}>
