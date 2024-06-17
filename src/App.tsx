@@ -12,6 +12,8 @@ import Oscillator from './modules/Oscillator'
 import Output from './modules/Output'
 import Power from './modules/Power'
 import Reverb from './modules/Reverb'
+import Amp from './modules/Amp'
+import Envelope from './modules/Envelope'
 
 
 export type WireConnection = {
@@ -105,7 +107,9 @@ export default function App() {
                 <Output position={[3, -0.25, 0]} color={'dimgray'} />
                 <Mult position={[-4.75, 1.38, 0]} rotation={[0, 0, Math.PI / 2]} numOutputs={3} labelAngle={0} />
                 <Mult position={[-4.75, -1.33, 0]} rotation={[0, 0, -Math.PI / 2]} numOutputs={4} labelAngle={Math.PI} />
-                <Reverb position={[-4.75 + 2.15 - (0.75 / 2), 3, 0]} />
+                <Reverb position={[-4.75 + 2.15 - (0.75 / 2), 3.2, 0]} />
+                <Envelope position={[3.5 - 2.15 + (0.75 / 2), 3.2, 0]} />
+                <Amp position={[4.2, 0.75, 0]} rotation={[0, 0, -Math.PI / 2]} />
                 {wires.map((w, i) => <Wire connection={w} key={i} unplug={unplug} />)}
                 {isDragging && <WirePreview connection={draggingConnection} />}
                 <MapControls enabled={!isDragging && !controlsDisabled} />
