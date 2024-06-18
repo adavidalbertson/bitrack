@@ -1,6 +1,6 @@
-import { Text } from '@react-three/drei'
+import { Merged, Text } from '@react-three/drei'
 import { ThreeEvent } from '@react-three/fiber'
-import { useContext, useMemo, useState } from 'react'
+import { createContext, PropsWithChildren, useContext, useMemo, useState } from 'react'
 import * as THREE from 'three'
 import { generateUUID } from 'three/src/math/MathUtils.js'
 import { ConnectionContext } from '../App'
@@ -30,27 +30,31 @@ type JackPropsInternal = ModuleProps & {
     plugged: boolean
 }
 
+type JackMeshes = {
+    exterior: THREE.Mesh,
+    interior: THREE.Mesh,
+    darkness: THREE.Mesh
+}
+
 const nut = new THREE.CylinderGeometry(0.25, 0.25, 0.05, 6, 1, false)
-nut.rotateX(Math.PI / 2)
-nut.translate(0, 0, 0.025)
+nut.translate(0, 0.025, 0)
 
 const nutFace = new THREE.CylinderGeometry(0.15, 0.25, 0.02, 6, 1, true)
-nutFace.rotateX(Math.PI / 2)
-nutFace.translate(0, 0, 0.06)
+nutFace.translate(0, 0.06, 0)
 
 const outerBarrel = new THREE.CylinderGeometry(0.15, 0.15, 0.15, 32, 1, true)
-outerBarrel.rotateX(Math.PI / 2)
-outerBarrel.translate(0, 0, 0.0625)
+outerBarrel.translate(0, 0.0625, 0)
 
 const innerBarrel = new THREE.CylinderGeometry(0.13, 0.13, 0.19, 32, 1, true)
-innerBarrel.rotateX(Math.PI / 2)
-innerBarrel.translate(0, 0, 0.0625)
+innerBarrel.translate(0, 0.0625, 0)
 
 const barrelFace = new THREE.CylinderGeometry(0.13, 0.15, 0.02, 32, 1, true)
-barrelFace.rotateX(Math.PI / 2)
-barrelFace.translate(0, 0, 0.1475)
+barrelFace.translate(0, 0.1475, 0)
 
-const metalMesh = BufferGeometryUtils.mergeGeometries([
+const darkness = new THREE.RingGeometry(0, 0.15, 12)
+darkness.translate(0, 0, 0.0625)
+
+const exterior = BufferGeometryUtils.mergeGeometries([
     nut,
     nutFace,
     outerBarrel,
@@ -58,8 +62,29 @@ const metalMesh = BufferGeometryUtils.mergeGeometries([
     barrelFace
 ])
 
+const jackMeshes: JackMeshes = {
+    exterior: new THREE.Mesh(exterior, new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 1 })),
+    interior: new THREE.Mesh(innerBarrel, new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 1, side: THREE.BackSide })),
+    darkness: new THREE.Mesh(darkness, new THREE.MeshStandardMaterial({ roughness: 1, metalness: 0, color: 'black' }))
+}
+
+const context = createContext(jackMeshes)
+export function Jacks({ children }: PropsWithChildren) {
+    // const instances = useMemo<JackMeshes>(() => ({
+    //     exterior: new THREE.Mesh(exterior, new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 1 })),
+    //     interior: new THREE.Mesh(innerBarrel, new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 1, side: THREE.BackSide })),
+    //     darkness: new THREE.Mesh(darkness, new THREE.MeshStandardMaterial({ roughness: 1, metalness: 0, color: 'black' }))
+    // }), [])
+    return (
+        <Merged meshes={jackMeshes}>
+            {(instances: JackMeshes) => <context.Provider value={instances} children={children} />}
+        </Merged>
+    )
+}
+
 export function Jack({ plugged, label, labelColor, labelAngle = 0, ...props }: JackPropsInternal) {
     const [hovered, hover] = useState(false)
+    const instances = useContext(context)
 
     return (
         <group
@@ -68,16 +93,9 @@ export function Jack({ plugged, label, labelColor, labelAngle = 0, ...props }: J
             <group
                 onPointerOver={(event) => (event.stopPropagation(), hover(true))}
                 onPointerOut={() => hover(false)}>
-                <mesh rotation={[0, 0, 0]} position={[0, 0, 0.0625]}>
-                    <ringGeometry args={[0, 0.15, 12]} />
-                    <meshStandardMaterial color={'black'} roughness={1} metalness={0} />
-                </mesh>
-                <mesh geometry={metalMesh}>
-                    <MetalMaterial hovered={hovered && !plugged} />
-                </mesh>
-                <mesh geometry={innerBarrel}>
-                    <MetalMaterial hovered={hovered && !plugged} side={THREE.BackSide} />
-                </mesh>
+                <instances.darkness />
+                <instances.exterior rotation={[Math.PI / 2, 0, 0]} color={hovered && !plugged ? 'hotpink' : 'white'} />
+                <instances.interior rotation={[Math.PI / 2, 0, 0]} color={hovered && !plugged ? 'hotpink' : 'white'} />
             </group>
             <group rotation={[0, 0, labelAngle]}>
                 <Text position={[0, -0.3, 0.0001]} scale={0.075}>
