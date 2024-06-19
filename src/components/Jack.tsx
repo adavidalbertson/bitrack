@@ -94,8 +94,8 @@ export function Jack({ plugged, label, labelColor, labelAngle = 0, ...props }: J
                 onPointerOver={(event) => (event.stopPropagation(), hover(true))}
                 onPointerOut={() => hover(false)}>
                 <instances.darkness />
-                <instances.exterior rotation={[Math.PI / 2, 0, 0]} color={hovered && !plugged ? 'hotpink' : 'white'} />
-                <instances.interior rotation={[Math.PI / 2, 0, 0]} color={hovered && !plugged ? 'hotpink' : 'white'} />
+                <instances.exterior rotation={[Math.PI / 2, 0, 0]} color={hovered && !plugged ? 0xff69b4 : 0xffffff} />
+                <instances.interior rotation={[Math.PI / 2, 0, 0]} color={hovered && !plugged ? 0xff69b4 : 0xffffff} />
             </group>
             <group rotation={[0, 0, labelAngle]}>
                 <Text position={[0, -0.3, 0.0001]} scale={0.075}>

@@ -1,9 +1,10 @@
-import { Text } from "@react-three/drei";
+import { Merged, Text } from "@react-three/drei";
 import { ThreeEvent } from "@react-three/fiber";
-import { useContext, useState } from "react";
+import { createContext, PropsWithChildren, useContext, useState } from "react";
 import { ConnectionContext } from "../App";
 import { MetalMaterial, PlasticMaterial } from "./materials/Materials";
 import { ModuleProps } from "./Props";
+import * as THREE from 'three';
 
 
 export type KnobProps = ModuleProps & {
@@ -18,13 +19,13 @@ export type KnobProps = ModuleProps & {
 }
 
 export type KnobShapeParams = {
-    knurls?: number
-    flangeHeight?: number
-    flangeRadius?: number
-    knobHeight?: number
-    knobRadius?: number
-    knurlDepth?: number
-    knurlHeight?: number
+    knurls: number
+    flangeHeight: number
+    flangeRadius: number
+    knobHeight: number
+    knobRadius: number
+    knurlDepth: number
+    knurlHeight: number
 }
 
 const defaultKnobShape = {
@@ -35,6 +36,44 @@ const defaultKnobShape = {
     knobRadius: 0.15,
     knurlDepth: 0.01,
     knurlHeight: 0.24
+}
+
+function createKnobMeshes({ knurls, flangeHeight, flangeRadius, knobHeight, knobRadius, knurlDepth, knurlHeight }: KnobShapeParams) {
+    const flangeGeometry = new THREE.CylinderGeometry(knobRadius, flangeRadius, flangeHeight, 32, 1, false, 0)
+    flangeGeometry.translate(0, flangeHeight / 2, 0)
+    const knobGeometry = new THREE.CylinderGeometry(knobRadius, knobRadius, knobHeight, 32, 1, false)
+    knobGeometry.translate(0, knobHeight / 2, 0)
+    const knurlGeometry = new THREE.BoxGeometry((knobRadius + knurlDepth) * Math.sin(Math.PI / (2 * knurls)), 2 * knobRadius + knurlDepth, knurlHeight)
+    knurlGeometry.translate(0, 0, knurlHeight / 2)
+    const pointerGeometry = new THREE.BoxGeometry(0.0175, knobRadius + knurlDepth, knobHeight + 2 * knurlDepth)
+    pointerGeometry.translate(0, (knobRadius / 2) + knurlDepth, knobHeight / 2)
+
+    const plasticMaterial = new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 0, color: 0x050505 })
+    const metalMaterial = new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 1 })
+    const pointerMaterial = new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 0 })
+
+    const flangeMesh = new THREE.Mesh(flangeGeometry, plasticMaterial)
+    const knobMesh = new THREE.Mesh(knobGeometry, metalMaterial)
+    const knurlMesh = new THREE.Mesh(knurlGeometry, plasticMaterial)
+    const pointerMesh = new THREE.Mesh(pointerGeometry, pointerMaterial)
+
+    return {
+        flange: flangeMesh,
+        knob: knobMesh,
+        knurls: knurlMesh,
+        pointer: pointerMesh
+    }
+}
+
+const standardKnobMeshes = createKnobMeshes(defaultKnobShape)
+
+const context = createContext(standardKnobMeshes)
+export function Knobs({ children }: PropsWithChildren) {
+    return (
+        <Merged meshes={standardKnobMeshes}>
+            {(instances) => <context.Provider value={instances} children={children} />}
+        </Merged>
+    )
 }
 
 export default function Knob({ updateParameter = () => { }, minValue = 0, maxValue = 1, initialValue = 0, exponential = false, knobShapeParams, color, label, labelColor, labelAngle = 0, ...props }: KnobProps) {
@@ -50,6 +89,8 @@ export default function Knob({ updateParameter = () => { }, minValue = 0, maxVal
 
     const shapeParams = { ...defaultKnobShape, ...knobShapeParams }
 
+    const instances = useContext(context)
+
     return <group {...props}>
         <group
             onPointerOver={() => { setControlsDisabled(true); hover(true) }}
@@ -57,26 +98,10 @@ export default function Knob({ updateParameter = () => { }, minValue = 0, maxVal
             rotation={[0, 0, calculateRotation(value)]}
             onWheel={(e: ThreeEvent<WheelEvent>) => { const v = calculateNewValue(value, e.deltaY, e.deltaX); setValue(v); updateParameter(exponential ? Math.pow(2, v) : v) }}
         >
-            {/* Flange */}
-            <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, shapeParams.flangeHeight / 2]} castShadow receiveShadow>
-                <cylinderGeometry args={[shapeParams.knobRadius, shapeParams.flangeRadius, shapeParams.flangeHeight, 32, 1, false, 0]} />
-                <PlasticMaterial color={color} hovered={hovered} />
-            </mesh>
-            {/* Knob */}
-            <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, shapeParams.knobHeight / 2]} castShadow receiveShadow>
-                <cylinderGeometry args={[shapeParams.knobRadius, shapeParams.knobRadius, shapeParams.knobHeight, 32, 1, false]} />
-                <MetalMaterial color={color} hovered={hovered} />
-            </mesh>
-            {/* Knurls */}
-            {[...Array(shapeParams.knurls)].map((_, i) => <mesh key={i} position={[0, 0, shapeParams.knurlHeight / 2]} rotation={[0, 0, i * (Math.PI / shapeParams.knurls)]}>
-                <boxGeometry args={[(shapeParams.knobRadius + shapeParams.knurlDepth) * Math.sin(Math.PI / (2 * shapeParams.knurls)), 2 * shapeParams.knobRadius + shapeParams.knurlDepth, shapeParams.knurlHeight]} />
-                <PlasticMaterial color={color} hovered={hovered} />
-            </mesh>)}
-            {/* Pointer */}
-            <mesh position={[0, (shapeParams.knobRadius / 2) + shapeParams.knurlDepth, shapeParams.knobHeight / 2]}>
-                <boxGeometry args={[0.0175, shapeParams.knobRadius + shapeParams.knurlDepth, shapeParams.knobHeight + 2 * shapeParams.knurlDepth]} />
-                <meshStandardMaterial color={0xffffff} roughness={0.25} metalness={0} />
-            </mesh>
+            <instances.flange rotation={[Math.PI / 2, 0, 0]} color={hovered ? 0x300020 : 0x050505} castShadow receiveShadow />
+            <instances.knob rotation={[Math.PI / 2, 0, 0]} color={hovered && !plugged ? 0xff69b4 : 0xffffff} castShadow receiveShadow />
+            {[...Array(shapeParams.knurls)].map((_, i) => <instances.knurls key={i} rotation={[0, 0, i * (Math.PI / shapeParams.knurls)]} color={hovered ? 0x300020 : 0x050505} />)}
+            <instances.pointer />
         </group>
         <group rotation={[0, 0, labelAngle]}>
             <Text scale={0.075} position={[0, -0.3, 0.0001]}>
