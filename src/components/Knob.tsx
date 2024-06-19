@@ -147,10 +147,18 @@ function KnobModel({ knobShapeParams = defaultKnobShape, color = 0x050505, ...pr
     const instances: KnobMeshes = useContext(defaultContext)
 
     return <KnobWrapper {...props} onPointerOver={() => { hover(true) }} onPointerOut={() => { hover(false) }}>
-        <instances.flange rotation={[Math.PI / 2, 0, 0]} color={hovered ? 0x300020 : color} castShadow receiveShadow />
-        <instances.knob rotation={[Math.PI / 2, 0, 0]} color={hovered ? 0xff69b4 : 0xffffff} castShadow receiveShadow />
-        {[...Array(knobShapeParams.knurls)].map((_, i) => <instances.knurls key={i} rotation={[0, 0, i * (Math.PI / knobShapeParams.knurls)]} color={hovered ? 0x300020 : color} />)}
-        <instances.pointer />
+        < // @ts-expect-error This is a Mesh
+            instances.flange
+            rotation={[Math.PI / 2, 0, 0]} color={hovered ? 0x300020 : color} castShadow receiveShadow />
+        < // @ts-expect-error This is a Mesh
+            instances.knob
+            rotation={[Math.PI / 2, 0, 0]} color={hovered ? 0xff69b4 : 0xffffff} castShadow receiveShadow />
+        {[...Array(knobShapeParams.knurls)].map((_, i) => < // @ts-expect-error This is a Mesh
+            instances.knurls
+            key={i} rotation={[0, 0, i * (Math.PI / knobShapeParams.knurls)]} color={hovered ? 0x300020 : color} />)}
+        < // @ts-expect-error This is a Mesh
+            instances.pointer
+        />
     </KnobWrapper>
 }
 
@@ -160,10 +168,18 @@ function FlatKnobModel({ knobShapeParams = defaultKnobShape, color = 0x050505, .
     const instances: KnobMeshes = useContext(flatContext)
 
     return <KnobWrapper {...props} onPointerOver={() => { hover(true) }} onPointerOut={() => { hover(false) }}>
-        <instances.flange rotation={[Math.PI / 2, 0, 0]} color={hovered ? 0x300020 : color} castShadow receiveShadow />
-        <instances.knob rotation={[Math.PI / 2, 0, 0]} color={hovered ? 0xff69b4 : 0xffffff} castShadow receiveShadow />
-        {[...Array(knobShapeParams.knurls)].map((_, i) => <instances.knurls key={i} rotation={[0, 0, i * (Math.PI / knobShapeParams.knurls)]} color={hovered ? 0x300020 : color} />)}
-        <instances.pointer />
+        < // @ts-expect-error This is a Mesh
+            instances.flange
+            rotation={[Math.PI / 2, 0, 0]} color={hovered ? 0x300020 : color} castShadow receiveShadow />
+        < // @ts-expect-error This is a Mesh
+            instances.knob
+            rotation={[Math.PI / 2, 0, 0]} color={hovered ? 0xff69b4 : 0xffffff} castShadow receiveShadow />
+        {[...Array(knobShapeParams.knurls)].map((_, i) => < // @ts-expect-error This is a Mesh
+            instances.knurls
+            key={i} rotation={[0, 0, i * (Math.PI / knobShapeParams.knurls)]} color={hovered ? 0x300020 : color} />)}
+        < // @ts-expect-error This is a Mesh
+            instances.pointer
+        />
     </KnobWrapper>
 }
 

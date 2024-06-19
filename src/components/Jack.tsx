@@ -70,11 +70,6 @@ const jackMeshes: JackMeshes = {
 
 const context = createContext(jackMeshes)
 export function Jacks({ children }: PropsWithChildren) {
-    // const instances = useMemo<JackMeshes>(() => ({
-    //     exterior: new THREE.Mesh(exterior, new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 1 })),
-    //     interior: new THREE.Mesh(innerBarrel, new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 1, side: THREE.BackSide })),
-    //     darkness: new THREE.Mesh(darkness, new THREE.MeshStandardMaterial({ roughness: 1, metalness: 0, color: 'black' }))
-    // }), [])
     return (
         <Merged meshes={jackMeshes}>
             {(instances: JackMeshes) => <context.Provider value={instances} children={children} />}
@@ -93,9 +88,15 @@ export function Jack({ plugged, label, labelColor, labelAngle = 0, ...props }: J
             <group
                 onPointerOver={(event) => (event.stopPropagation(), hover(true))}
                 onPointerOut={() => hover(false)}>
-                <instances.darkness />
-                <instances.exterior rotation={[Math.PI / 2, 0, 0]} color={hovered && !plugged ? 0xff69b4 : 0xffffff} />
-                <instances.interior rotation={[Math.PI / 2, 0, 0]} color={hovered && !plugged ? 0xff69b4 : 0xffffff} />
+                < // @ts-expect-error This is a Mesh
+                    instances.darkness
+                />
+                < // @ts-expect-error This is a Mesh
+                    instances.exterior
+                    rotation={[Math.PI / 2, 0, 0]} color={hovered && !plugged ? 0xff69b4 : 0xffffff} />
+                < // @ts-expect-error This is a Mesh
+                    instances.interior
+                    rotation={[Math.PI / 2, 0, 0]} color={hovered && !plugged ? 0xff69b4 : 0xffffff} />
             </group>
             <group rotation={[0, 0, labelAngle]}>
                 <Text position={[0, -0.3, 0.0001]} scale={0.075}>
