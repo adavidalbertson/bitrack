@@ -2,11 +2,11 @@ import { Merged, Text } from '@react-three/drei'
 import { ThreeEvent } from '@react-three/fiber'
 import { createContext, PropsWithChildren, useContext, useMemo, useState } from 'react'
 import * as THREE from 'three'
+import { BufferGeometryUtils } from 'three/examples/jsm/Addons.js'
 import { generateUUID } from 'three/src/math/MathUtils.js'
 import { ConnectionContext } from '../App'
 import { MetalMaterial } from './materials/Materials'
 import { ModuleProps } from './Props'
-import { BufferGeometryUtils } from 'three/examples/jsm/Addons.js'
 
 export type JackProps = ModuleProps & {
     audioNode: AudioNode

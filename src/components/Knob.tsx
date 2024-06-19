@@ -1,10 +1,10 @@
 import { Merged, Text } from "@react-three/drei";
 import { ThreeEvent } from "@react-three/fiber";
 import { createContext, PropsWithChildren, useContext, useState } from "react";
-import { ConnectionContext } from "../App";
-import { MetalMaterial, PlasticMaterial } from "./materials/Materials";
-import { ModuleProps } from "./Props";
 import * as THREE from 'three';
+import { ConnectionContext } from "../App";
+import { MetalMaterial } from "./materials/Materials";
+import { ModuleProps } from "./Props";
 
 
 export type KnobProps = ModuleProps & {
@@ -16,6 +16,13 @@ export type KnobProps = ModuleProps & {
     exponential?: boolean
 
     knobShapeParams?: KnobShapeParams
+}
+
+type KnobMeshes = {
+    flange: THREE.Mesh,
+    knob: THREE.Mesh,
+    knurls: THREE.Mesh,
+    pointer: THREE.Mesh,
 }
 
 export type KnobShapeParams = {
@@ -38,7 +45,17 @@ const defaultKnobShape = {
     knurlHeight: 0.24
 }
 
-function createKnobMeshes({ knurls, flangeHeight, flangeRadius, knobHeight, knobRadius, knurlDepth, knurlHeight }: KnobShapeParams) {
+const flatKnobShape = {
+    knurls: 5,
+    flangeHeight: 0.2,
+    flangeRadius: 0.25,
+    knobHeight: 0.19,
+    knobRadius: 0.249,
+    knurlDepth: 0.02,
+    knurlHeight: 0.2
+}
+
+function createKnobMeshes({ knurls, flangeHeight, flangeRadius, knobHeight, knobRadius, knurlDepth, knurlHeight }: KnobShapeParams): KnobMeshes {
     const flangeGeometry = new THREE.CylinderGeometry(knobRadius, flangeRadius, flangeHeight, 32, 1, false, 0)
     flangeGeometry.translate(0, flangeHeight / 2, 0)
     const knobGeometry = new THREE.CylinderGeometry(knobRadius, knobRadius, knobHeight, 32, 1, false)
@@ -48,7 +65,7 @@ function createKnobMeshes({ knurls, flangeHeight, flangeRadius, knobHeight, knob
     const pointerGeometry = new THREE.BoxGeometry(0.0175, knobRadius + knurlDepth, knobHeight + 2 * knurlDepth)
     pointerGeometry.translate(0, (knobRadius / 2) + knurlDepth, knobHeight / 2)
 
-    const plasticMaterial = new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 0, color: 0x050505 })
+    const plasticMaterial = new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 0 })
     const metalMaterial = new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 1 })
     const pointerMaterial = new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 0 })
 
@@ -66,42 +83,54 @@ function createKnobMeshes({ knurls, flangeHeight, flangeRadius, knobHeight, knob
 }
 
 const standardKnobMeshes = createKnobMeshes(defaultKnobShape)
+const flatKnobMeshes = createKnobMeshes(flatKnobShape)
 
-const context = createContext(standardKnobMeshes)
-export function Knobs({ children }: PropsWithChildren) {
+const defaultContext = createContext(standardKnobMeshes)
+function DefaultKnobs({ children }: PropsWithChildren) {
     return (
         <Merged meshes={standardKnobMeshes}>
-            {(instances) => <context.Provider value={instances} children={children} />}
+            {(instances: KnobMeshes) => <defaultContext.Provider value={instances} children={children} />}
         </Merged>
     )
 }
 
-export default function Knob({ updateParameter = () => { }, minValue = 0, maxValue = 1, initialValue = 0, exponential = false, knobShapeParams, color, label, labelColor, labelAngle = 0, ...props }: KnobProps) {
+const flatContext = createContext(flatKnobMeshes)
+function FlatKnobs({ children }: PropsWithChildren) {
+    return (
+        <Merged meshes={flatKnobMeshes}>
+            {(instances: KnobMeshes) => <flatContext.Provider value={instances} children={children} />}
+        </Merged>
+    )
+}
+
+export function Knobs({ children }: PropsWithChildren) {
+    return (
+        <DefaultKnobs>
+            <FlatKnobs>
+                {children}
+            </FlatKnobs>
+        </DefaultKnobs>
+    )
+}
+
+const calculateNewValue = (value: number, deltaY: number, deltaX: number, actualMin: number, actualMax: number) => Math.max(actualMin, Math.min(value - (actualMax - actualMin) * ((deltaY / 1000) - (deltaX / 10000)), actualMax))
+const calculateRotation = (value: number, actualMin: number, actualMax: number) => ((value - actualMin) / (actualMax - actualMin)) * (-3 * Math.PI / 2) + (3 * Math.PI / 4)
+
+function KnobWrapper({ updateParameter = () => { }, minValue = 0, maxValue = 1, initialValue = 0, exponential = false, label, labelColor, labelAngle = 0, children, ...props }: PropsWithChildren<KnobProps>) {
     const { setControlsDisabled } = useContext(ConnectionContext)
-    const [hovered, hover] = useState(false)
     const [value, setValue] = useState(exponential ? Math.log2(initialValue) : initialValue)
 
     const actualMin = exponential ? Math.log2(minValue) : minValue
     const actualMax = exponential ? Math.log2(maxValue) : maxValue
 
-    const calculateNewValue = (value: number, deltaY: number, deltaX: number) => Math.max(actualMin, Math.min(value - (actualMax - actualMin) * ((deltaY / 1000) - (deltaX / 10000)), actualMax))
-    const calculateRotation = (value: number) => ((value - actualMin) / (actualMax - actualMin)) * (-3 * Math.PI / 2) + (3 * Math.PI / 4)
-
-    const shapeParams = { ...defaultKnobShape, ...knobShapeParams }
-
-    const instances = useContext(context)
-
     return <group {...props}>
         <group
-            onPointerOver={() => { setControlsDisabled(true); hover(true) }}
-            onPointerOut={() => { setControlsDisabled(false); hover(false) }}
-            rotation={[0, 0, calculateRotation(value)]}
-            onWheel={(e: ThreeEvent<WheelEvent>) => { const v = calculateNewValue(value, e.deltaY, e.deltaX); setValue(v); updateParameter(exponential ? Math.pow(2, v) : v) }}
+            onPointerOver={() => { setControlsDisabled(true) }}
+            onPointerOut={() => { setControlsDisabled(false) }}
+            rotation={[0, 0, calculateRotation(value, actualMin, actualMax)]}
+            onWheel={(e: ThreeEvent<WheelEvent>) => { const v = calculateNewValue(value, e.deltaY, e.deltaX, actualMin, actualMax); setValue(v); updateParameter(exponential ? Math.pow(2, v) : v) }}
         >
-            <instances.flange rotation={[Math.PI / 2, 0, 0]} color={hovered ? 0x300020 : 0x050505} castShadow receiveShadow />
-            <instances.knob rotation={[Math.PI / 2, 0, 0]} color={hovered && !plugged ? 0xff69b4 : 0xffffff} castShadow receiveShadow />
-            {[...Array(shapeParams.knurls)].map((_, i) => <instances.knurls key={i} rotation={[0, 0, i * (Math.PI / shapeParams.knurls)]} color={hovered ? 0x300020 : 0x050505} />)}
-            <instances.pointer />
+            {children}
         </group>
         <group rotation={[0, 0, labelAngle]}>
             <Text scale={0.075} position={[0, -0.3, 0.0001]}>
@@ -112,24 +141,44 @@ export default function Knob({ updateParameter = () => { }, minValue = 0, maxVal
     </group>
 }
 
-export function BalancedKnob(props: KnobProps) {
-    return <Knob {...props} minValue={-1} maxValue={1} />
+function KnobModel({ knobShapeParams = defaultKnobShape, color = 0x050505, ...props }: KnobProps) {
+    const [hovered, hover] = useState(false)
+
+    const instances: KnobMeshes = useContext(defaultContext)
+
+    return <KnobWrapper {...props} onPointerOver={() => { hover(true) }} onPointerOut={() => { hover(false) }}>
+        <instances.flange rotation={[Math.PI / 2, 0, 0]} color={hovered ? 0x300020 : color} castShadow receiveShadow />
+        <instances.knob rotation={[Math.PI / 2, 0, 0]} color={hovered ? 0xff69b4 : 0xffffff} castShadow receiveShadow />
+        {[...Array(knobShapeParams.knurls)].map((_, i) => <instances.knurls key={i} rotation={[0, 0, i * (Math.PI / knobShapeParams.knurls)]} color={hovered ? 0x300020 : color} />)}
+        <instances.pointer />
+    </KnobWrapper>
 }
 
-const flatKnobParams = {
-    knurls: 5,
-    flangeHeight: 0.2,
-    flangeRadius: 0.25,
-    knobHeight: 0.19,
-    knobRadius: 0.249,
-    knurlDepth: 0.02,
-    knurlHeight: 0.2
+function FlatKnobModel({ knobShapeParams = defaultKnobShape, color = 0x050505, ...props }: KnobProps) {
+    const [hovered, hover] = useState(false)
+
+    const instances: KnobMeshes = useContext(flatContext)
+
+    return <KnobWrapper {...props} onPointerOver={() => { hover(true) }} onPointerOut={() => { hover(false) }}>
+        <instances.flange rotation={[Math.PI / 2, 0, 0]} color={hovered ? 0x300020 : color} castShadow receiveShadow />
+        <instances.knob rotation={[Math.PI / 2, 0, 0]} color={hovered ? 0xff69b4 : 0xffffff} castShadow receiveShadow />
+        {[...Array(knobShapeParams.knurls)].map((_, i) => <instances.knurls key={i} rotation={[0, 0, i * (Math.PI / knobShapeParams.knurls)]} color={hovered ? 0x300020 : color} />)}
+        <instances.pointer />
+    </KnobWrapper>
+}
+
+export default function Knob(props: KnobProps) {
+    return <KnobModel {...props} />
+}
+
+export function BalancedKnob(props: KnobProps) {
+    return <KnobModel {...props} minValue={-1} maxValue={1} />
 }
 
 export function FlatKnob(props: KnobProps) {
-    return <Knob {...props} knobShapeParams={flatKnobParams} />
+    return <FlatKnobModel {...props} knobShapeParams={flatKnobShape} />
 }
 
 export function BalancedFlatKnob(props: KnobProps) {
-    return <FlatKnob {...props} minValue={-1} maxValue={1} knobShapeParams={flatKnobParams} />
+    return <FlatKnobModel {...props} knobShapeParams={flatKnobShape} minValue={-1} maxValue={1} />
 }
