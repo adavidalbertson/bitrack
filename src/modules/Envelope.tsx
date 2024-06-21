@@ -10,10 +10,10 @@ import { MetalMaterial } from "../components/materials/Materials";
 export default function Envelope({ color = 0x101010, label = "EG", labelAngle = 0, labelColor = 0xffffff, ...props }: ModuleProps) {
     const { audioCtx } = useContext(ConnectionContext)
     const node = useRef(new ConstantSourceNode(audioCtx, { offset: 0 }))
-    const attack = useRef(0.25)
-    const decay = useRef(0.25)
+    const attack = useRef(0.1)
+    const decay = useRef(0.1)
     const sustain = useRef(1)
-    const release = useRef(0.25)
+    const release = useRef(0.01)
 
     const trigger = () => {
         try {
@@ -35,6 +35,12 @@ export default function Envelope({ color = 0x101010, label = "EG", labelAngle = 
     }
 
     const untrigger = () => {
+        if (node.current.offset.cancelAndHoldAtTime) {
+            node.current.offset.cancelAndHoldAtTime(audioCtx.currentTime)
+        } else {
+            // Cancel and hold not supported by Firefox
+            node.current.offset.cancelScheduledValues(audioCtx.currentTime)
+        }
         // https://developer.mozilla.org/en-US/docs/Web/API/AudioParam/setTargetAtTime#choosing_a_good_timeconstant
         node.current.offset.setTargetAtTime(0, audioCtx.currentTime, 4 * release.current)
     }
@@ -43,10 +49,10 @@ export default function Envelope({ color = 0x101010, label = "EG", labelAngle = 
         {...props}
     >
         <Button position={[-5 * 0.75 / 2, 0, 0]} label={"TRIGGER"} onPush={trigger} onRelease={untrigger} />
-        <Knob position={[-3 * 0.75 / 2, 0, 0]} updateParameter={f => attack.current = f} minValue={0} maxValue={1} initialValue={0.25} label={"ATTACK"} labelAngle={labelAngle} labelColor={labelColor} />
-        <Knob position={[-0.75 / 2, 0, 0]} updateParameter={f => decay.current = f} minValue={0} maxValue={1} initialValue={0.25} label={"DECAY"} labelAngle={labelAngle} labelColor={labelColor} />
+        <Knob position={[-3 * 0.75 / 2, 0, 0]} updateParameter={f => attack.current = f} minValue={0} maxValue={1} initialValue={0.1} label={"ATTACK"} labelAngle={labelAngle} labelColor={labelColor} />
+        <Knob position={[-0.75 / 2, 0, 0]} updateParameter={f => decay.current = f} minValue={0} maxValue={1} initialValue={0.1} label={"DECAY"} labelAngle={labelAngle} labelColor={labelColor} />
         <Knob position={[0.75 / 2, 0, 0]} updateParameter={f => sustain.current = f} minValue={0} maxValue={1} initialValue={1} label={"SUSTAIN"} labelAngle={labelAngle} labelColor={labelColor} />
-        <Knob position={[3 * 0.75 / 2, 0, 0]} updateParameter={f => release.current = f} minValue={0} maxValue={1} initialValue={0.25} label={"RELEASE"} labelAngle={labelAngle} labelColor={labelColor} />
+        <Knob position={[3 * 0.75 / 2, 0, 0]} updateParameter={f => release.current = f} minValue={0} maxValue={1} initialValue={0.01} label={"RELEASE"} labelAngle={labelAngle} labelColor={labelColor} />
         <OutputJack position={[5 * 0.75 / 2, 0, 0]} audioNode={node.current} label={"OUT"} />
         <mesh position={[-0.1, 0, -0.5]} castShadow receiveShadow>
             <boxGeometry args={[4.75, 0.8, 1]} />
