@@ -14,7 +14,7 @@ export default function Reverb({ color = 0x101010, label = "REVERB", labelAngle 
     const dryGain = useRef(new GainNode(audioCtx, { gain: 1 }))
     const output = useRef(new GainNode(audioCtx, { gain: 1 }))
     const verbLength = useRef(1)
-    const lengthKnobTimeout = useRef<number>()
+    const lengthKnobTimeout = useRef<ReturnType<typeof setTimeout>>()
 
     const createConvolutionBuffers = useCallback(() => {
         const bufferLength = Math.round(audioCtx.sampleRate * verbLength.current)

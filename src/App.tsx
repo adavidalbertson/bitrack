@@ -94,7 +94,7 @@ export default function App() {
     return (
         <ConnectionContext.Provider value={{ setControlsDisabled, connect: plug, audioCtx: audioCtx.current, wires }} >
             <Canvas shadows onPointerUp={() => { setIsDragging(false); setDraggingConnection(null!) }}>
-                <Perf />
+                {process.env.NODE_ENV === "development" && <Perf />}
                 <Jacks>
                     <Knobs>
                         <ambientLight intensity={1} />
