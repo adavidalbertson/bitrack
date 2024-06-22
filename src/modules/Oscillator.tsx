@@ -39,11 +39,11 @@ export default function Oscillator({ minFreq = 110, initialFreq = 220, maxFreq =
     }
 
     const updateFreq = (f: number) => {
-        osc.current.frequency.exponentialRampToValueAtTime(f, audioCtx.currentTime + 0.2)
+        osc.current.frequency.setTargetAtTime(f, audioCtx.currentTime, 0.04)
     }
 
     const updateFreqModAmt = (g: number) => {
-        freqModAmt.current.gain.exponentialRampToValueAtTime(g, audioCtx.currentTime + 0.2)
+        freqModAmt.current.gain.setTargetAtTime(g, audioCtx.currentTime, 0.04)
     }
 
     return <group

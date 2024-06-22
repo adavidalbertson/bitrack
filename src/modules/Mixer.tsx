@@ -30,7 +30,7 @@ export default function Mixer({ numInputs = 2, color = 0x101010, label = "MIX", 
     }, [audioCtx, numInputs])
 
     const updateGain = (i: number) => (level: number) => {
-        inputs[i].gain.exponentialRampToValueAtTime(level, audioCtx.currentTime + 0.2)
+        inputs[i].gain.setTargetAtTime(level, audioCtx.currentTime, 0.04)
     }
 
     return <group

@@ -47,11 +47,11 @@ export default function Reverb({ color = 0x101010, label = "REVERB", labelAngle 
     }, [audioCtx, createConvolutionBuffers])
 
     const updateDry = (f: number) => {
-        dryGain.current.gain.exponentialRampToValueAtTime(f, audioCtx.currentTime + 0.2)
+        dryGain.current.gain.setTargetAtTime(f, audioCtx.currentTime, 0.04)
     }
 
     const updateWet = (f: number) => {
-        wetGain.current.gain.exponentialRampToValueAtTime(f, audioCtx.currentTime + 0.2)
+        wetGain.current.gain.setTargetAtTime(f, audioCtx.currentTime, 0.04)
     }
 
     const updateLength = (f: number) => {

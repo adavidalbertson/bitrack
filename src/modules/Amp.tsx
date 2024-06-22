@@ -11,7 +11,7 @@ export default function Amp({ color = 0x010101, label = 'AMP', labelColor, label
     const amp = useRef(new GainNode(audioCtx, { gain: 0 }))
 
     const updateGain = (f: number) => {
-        amp.current.gain.exponentialRampToValueAtTime(f, audioCtx.currentTime + 0.2)
+        amp.current.gain.setTargetAtTime(f, audioCtx.currentTime, 0.04)
     }
 
     return <group

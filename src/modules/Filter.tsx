@@ -21,19 +21,19 @@ export default function Filter({ color, label = 'VCF', labelColor, labelAngle, .
     }, [audioCtx])
 
     const updateFreq = (f: number) => {
-        vcf.current.frequency.exponentialRampToValueAtTime(f, audioCtx.currentTime + 0.2)
+        vcf.current.frequency.setTargetAtTime(f, audioCtx.currentTime, 0.04)
     }
 
     const updateRes = (f: number) => {
-        vcf.current.Q.exponentialRampToValueAtTime(f, audioCtx.currentTime + 0.2)
+        vcf.current.Q.setTargetAtTime(f, audioCtx.currentTime, 0.04)
     }
 
     const updateVcfModAmt = (f: number) => {
-        vcfModAmt.current.gain.exponentialRampToValueAtTime(f, audioCtx.currentTime + 0.2)
+        vcfModAmt.current.gain.setTargetAtTime(f, audioCtx.currentTime, 0.04)
     }
 
     const updateResModAmt = (f: number) => {
-        resModAmt.current.gain.exponentialRampToValueAtTime(f, audioCtx.currentTime + 0.2)
+        resModAmt.current.gain.setTargetAtTime(f, audioCtx.currentTime, 0.04)
     }
 
     return <group {...props}>
