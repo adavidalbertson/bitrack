@@ -35,8 +35,9 @@ const mainAudioContext = new AudioContext()
 mainAudioContext.suspend()
 
 const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100)
-camera.translateY(8)
-camera.translateZ(5)
+camera.translateY(-5)
+camera.translateZ(8)
+camera.up = new THREE.Vector3(0, 0, 1)
 
 export const ConnectionContext = createContext<{
     setControlsDisabled: (x: boolean) => void
