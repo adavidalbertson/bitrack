@@ -1,4 +1,3 @@
-import { MeshTransmissionMaterial } from "@react-three/drei";
 import { GroupProps } from "@react-three/fiber";
 import { Color, ColorRepresentation } from "three";
 
@@ -13,7 +12,7 @@ export default function LED({ intensity = 0, color = 0xff0000, ...props }: LEDPr
     >
         <mesh>
             <sphereGeometry args={[0.05]} />
-            <MeshTransmissionMaterial color={0xcdcdcd} thickness={0.2} anisotropy={0.1} chromaticAberration={0.04} />
+            <meshPhysicalMaterial color={0xcdcdcd} transmission={0.99} reflectivity={0.5} roughness={0} />
         </mesh>
         <mesh>
             <sphereGeometry args={[0.04]} />
