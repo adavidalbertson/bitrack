@@ -88,7 +88,7 @@ const flatKnobMeshes = createKnobMeshes(flatKnobShape)
 const defaultContext = createContext(standardKnobMeshes)
 function DefaultKnobs({ children }: PropsWithChildren) {
     return (
-        <Merged meshes={standardKnobMeshes}>
+        <Merged meshes={standardKnobMeshes} frustumCulled={false}>
             {(instances: KnobMeshes) => <defaultContext.Provider value={instances} children={children} />}
         </Merged>
     )

@@ -71,7 +71,7 @@ const jackMeshes: JackMeshes = {
 const context = createContext(jackMeshes)
 export function Jacks({ children }: PropsWithChildren) {
     return (
-        <Merged meshes={jackMeshes}>
+        <Merged meshes={jackMeshes} frustumCulled={false}>
             {(instances: JackMeshes) => <context.Provider value={instances} children={children} />}
         </Merged>
     )
