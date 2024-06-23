@@ -5,7 +5,7 @@ import { InputJack } from "../components/Jack";
 import { MetalMaterial } from "../components/materials/Materials";
 import { ModuleProps } from "../components/Props";
 
-export default function Output({ color = 0x101010, label = 'OUT', labelColor, ...props }: ModuleProps) {
+export default function Output({ color = 0x101010, label = 'SPEAKER', labelColor, ...props }: ModuleProps) {
     const { audioCtx } = useContext(ConnectionContext)
 
     return <group
