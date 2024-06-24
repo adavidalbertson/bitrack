@@ -13,7 +13,7 @@ export type OscillatorProps = ModuleProps & {
     waveType?: "sine" | "square" | "sawtooth" | "triangle"
 }
 
-export default function Oscillator({ minFreq = 110, initialFreq = 220, maxFreq = 440, waveType = 'sawtooth', color = 0x101010, label = 'VCO', labelColor, labelAngle = Math.PI / 6, ...props }: OscillatorProps) {
+export default function Oscillator({ minFreq = 22, initialFreq = 220, maxFreq = 1760, waveType = 'sawtooth', color = 0x101010, label = 'VCO', labelColor, labelAngle = Math.PI / 6, ...props }: OscillatorProps) {
     const { audioCtx } = useContext(ConnectionContext)
     const osc = useRef(new OscillatorNode(audioCtx, {
         type: waveType,

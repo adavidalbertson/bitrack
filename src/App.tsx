@@ -106,11 +106,11 @@ export default function App() {
                     <directionalLight position={[5, 5, 10]} shadow-mapSize={2048} shadow-bias={-0.0001} castShadow intensity={5}>
                         <orthographicCamera attach="shadow-camera" args={[-10, 10, 10, -10, 1, 100]} />
                     </directionalLight>
-                    <Oscillator position={[-3.5, 0.75, 0]} minFreq={0.1} initialFreq={1} maxFreq={20} waveType={'triangle'} color={'darkgray'} label={'LFO'} labelColor={0x0000aa} labelAngle={0} />
+                    <Oscillator position={[-3.5, 0.75, 0]} minFreq={0.1} initialFreq={1} maxFreq={40} waveType={'triangle'} color={'darkgray'} label={'LFO'} labelColor={0x0000aa} labelAngle={0} />
                     <Oscillator position={[-3.5 + 1.5, 0.75, 0]} label={"VCO1"} />
                     <Oscillator position={[-2.5 + 1.5, 0.75, 0]} label={"VCO2"} />
                     <Oscillator position={[-1.5 + 1.5, 0.75, 0]} label={"VCO3"} waveType={'square'} />
-                    <Oscillator position={[1.5, 0.75, 0]} minFreq={0.1} initialFreq={1} maxFreq={20} waveType={'triangle'} color={'darkgray'} label={'LFO'} labelColor={0x0000aa} labelAngle={0} />
+                    <Oscillator position={[1.5, 0.75, 0]} minFreq={0.1} initialFreq={1} maxFreq={40} waveType={'triangle'} color={'darkgray'} label={'LFO'} labelColor={0x0000aa} labelAngle={0} />
                     <Filter position={[-2.3, -2, 0]} color={0x103040} />
                     <Mixer position={[1.7, -2, 0]} numInputs={4} />
                     <Mult position={[-4.75, 1.38, 0]} rotation={[0, 0, Math.PI / 2]} numOutputs={3} labelAngle={0} />

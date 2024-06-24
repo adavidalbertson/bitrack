@@ -49,10 +49,10 @@ export default function Envelope({ color = 0x101010, label = "EG", labelAngle = 
         {...props}
     >
         <Button position={[-5 * 0.75 / 2, 0, 0]} label={"TRIGGER"} onPush={trigger} onRelease={untrigger} />
-        <Knob position={[-3 * 0.75 / 2, 0, 0]} updateParameter={f => attack.current = f} minValue={0} maxValue={1} initialValue={0.1} label={"ATTACK"} labelAngle={labelAngle} labelColor={labelColor} />
-        <Knob position={[-0.75 / 2, 0, 0]} updateParameter={f => decay.current = f} minValue={0} maxValue={1} initialValue={0.1} label={"DECAY"} labelAngle={labelAngle} labelColor={labelColor} />
+        <Knob position={[-3 * 0.75 / 2, 0, 0]} updateParameter={f => attack.current = f} minValue={0.001} maxValue={1} initialValue={0.1} label={"ATTACK"} labelAngle={labelAngle} labelColor={labelColor} />
+        <Knob position={[-0.75 / 2, 0, 0]} updateParameter={f => decay.current = f} minValue={0.001} maxValue={1} initialValue={0.1} label={"DECAY"} labelAngle={labelAngle} labelColor={labelColor} />
         <Knob position={[0.75 / 2, 0, 0]} updateParameter={f => sustain.current = f} minValue={0} maxValue={1} initialValue={1} label={"SUSTAIN"} labelAngle={labelAngle} labelColor={labelColor} />
-        <Knob position={[3 * 0.75 / 2, 0, 0]} updateParameter={f => release.current = f} minValue={0} maxValue={1} initialValue={0.01} label={"RELEASE"} labelAngle={labelAngle} labelColor={labelColor} />
+        <Knob position={[3 * 0.75 / 2, 0, 0]} updateParameter={f => release.current = f} minValue={0.001} maxValue={1} initialValue={0.01} label={"RELEASE"} labelAngle={labelAngle} labelColor={labelColor} />
         <OutputJack position={[5 * 0.75 / 2, 0, 0]} audioNode={node.current} label={"OUT"} />
         <mesh position={[-0.1, 0, -0.5]} castShadow receiveShadow>
             <boxGeometry args={[4.75, 0.8, 1]} />
