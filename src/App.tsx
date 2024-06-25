@@ -17,6 +17,7 @@ import Oscillator from './modules/Oscillator'
 import Output from './modules/Output'
 import Power from './modules/Power'
 import Reverb from './modules/Reverb'
+import Sequencer from './modules/Sequencer'
 
 
 export type WireConnection = {
@@ -106,6 +107,7 @@ export default function App() {
                     <directionalLight position={[5, 5, 10]} shadow-mapSize={2048} shadow-bias={-0.0001} castShadow intensity={5}>
                         <orthographicCamera attach="shadow-camera" args={[-10, 10, 10, -10, 1, 100]} />
                     </directionalLight>
+                    <Sequencer position={[0, 4.5, 0]} />
                     <Oscillator position={[-3.5, 0.75, 0]} minFreq={0.1} initialFreq={1} maxFreq={40} waveType={'triangle'} color={'darkgray'} label={'LFO'} labelColor={0x0000aa} labelAngle={0} />
                     <Oscillator position={[-3.5 + 1.5, 0.75, 0]} label={"VCO1"} />
                     <Oscillator position={[-2.5 + 1.5, 0.75, 0]} label={"VCO2"} />
